@@ -28,6 +28,7 @@ void CMesAgentDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_LED_HANDLER_STATE, m_ledHandlerState);
 	DDX_Control(pDX, IDC_LED_HOST_STATE, m_ledHostState);
 	DDX_Control(pDX, IDC_LED_VISION_STATE, m_ledVisionState);
+	DDX_Control(pDX, IDC_PROGRESS_RMS, m_PgrCtrlRMS);
 }
 
 BEGIN_MESSAGE_MAP(CMesAgentDlg, CDialogEx)
@@ -75,6 +76,20 @@ BOOL CMesAgentDlg::OnInitDialog()
 	sTemp.Format("MesAgent - DFA - Carrier - %s", MAIN_VERSION);
 	SetWindowText(sTemp);
 	g_objCommon.Clean_Data();
+
+	int nTotal = 0;
+	gData.nRMSPgr = 0;
+	
+	gData.nFAICnt = 96;
+	gData.nLightCnt = 543;
+	gData.nParamCnt = 20;
+	nTotal = gData.nFAICnt + gData.nLightCnt + gData.nParamCnt;
+	m_PgrCtrlRMS.SetRange(0,nTotal);
+
+	for(int i = 0; i < FILE_COUNT; i++)
+	{
+		gData.bRMSLoadDone[i] = FALSE;
+	}
 
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
@@ -187,6 +202,8 @@ void CMesAgentDlg::OnTimer(UINT_PTR nIDEvent)
 		g_objHost.Set_S6F11_ControlState(2);	// 1:Online, 2:Offline
 		g_objHandler.Set_ControlState(2);		// 1:Online, 2:Offline
 	}
+
+	m_PgrCtrlRMS.SetPos(gData.nRMSPgr);
 
 	SetTimer(0, 1000, NULL);
 	CDialogEx::OnTimer(nIDEvent);
@@ -424,12 +441,60 @@ void CMesAgentDlg::Test_Data()
 
 void CMesAgentDlg::Load_RMSData()
 {
-	CString strTest;
+	CString strLog;
 
-	g_objCommon.LoadIniToVector("D:\\RMS\\FaiMeasureSpec_DFA_PC2.ini", glistFAIInfo);
-	strTest = glistFAIInfo[0].key;
-	strTest = glistFAIInfo[1].key;
-	strTest = glistFAIInfo[2].key;
+	//항목 개수 체크 
 
+	int nFAIReadCnt = 0, nLightReadCnt = 0, nParamReadCnt = 0;
+	
+	gData.bRMSLoadDone[0] = FALSE;
 
+	//RMS_Validation.ini 파일에서 파일 개수들 불러와서 비교하기 
+
+	if(g_objCommon.LoadIniToVector("D:\\RMS\\FaiMeasureSpec_DFA_PC2.ini", glistFAIInfo_PC2, nFAIReadCnt))
+	{
+		if(nFAIReadCnt != gData.nFAICnt)
+		{
+			strLog.Format("[LoadIniToVector] <Cnt Mismatch> - nFAIReadCnt(%d), gData.nFAICnt(%d)\n", nFAIReadCnt, gData.nFAICnt);
+			g_objLogFile.Save_HandlerLog(strLog);
+			gData.bRMSLoadDone[FAI_PC2] = FALSE;
+		}
+		strLog.Format("[LoadIniToVector] <Read Success> - nFAIReadCnt(%d), gData.nFAICnt(%d)\n", nFAIReadCnt, gData.nFAICnt);
+		g_objLogFile.Save_HandlerLog(strLog);
+	}
+	
+	if(g_objCommon.LoadIniToVector("D:\\RMS\\InspectLightInfo_PC1.ini", glistLightInfo_PC1, nLightReadCnt))
+	{
+		if(nLightReadCnt != gData.nLightCnt)
+		{
+			strLog.Format("[LoadIniToVector] <Cnt Mismatch> - nLightReadCnt(%d), gData.nLightCnt(%d)\n", nLightReadCnt, gData.nLightCnt);
+			g_objLogFile.Save_HandlerLog(strLog);
+			gData.bRMSLoadDone[LIGHT_PC1] = FALSE;
+		}
+		strLog.Format("[LoadIniToVector] <Read Success> - nLightReadCnt(%d), gData.nLightCnt(%d)\n", nLightReadCnt, gData.nLightCnt);
+		g_objLogFile.Save_HandlerLog(strLog);
+	}
+
+	if(g_objCommon.LoadIniToVector("D:\\RMS\\InspectParam_PC5.ini", glistParamInfo_PC5, nParamReadCnt))
+	{
+		if(nParamReadCnt != gData.nParamCnt)
+		{
+			strLog.Format("[LoadIniToVector] <Cnt Mismatch> - nParamReadCnt(%d), gData.nParamCnt(%d)\n", nParamReadCnt, gData.nParamCnt);
+			g_objLogFile.Save_HandlerLog(strLog);
+			gData.bRMSLoadDone[PARAM_PC5] = FALSE;
+		}
+		strLog.Format("[LoadIniToVector] <Read Success> - nParamReadCnt(%d), gData.nParamCnt(%d)\n", nParamReadCnt, gData.nParamCnt);
+		g_objLogFile.Save_HandlerLog(strLog);
+	}
+
+	int nCheck = 0;
+	for(int i = 0; i < FILE_COUNT; i++)
+	{
+		if(gData.bRMSLoadDone) nCheck++;
+	}
+	if(nCheck == FILE_COUNT-1)
+	{
+		gData.bRMSLoadDone[0] = TRUE;
+		g_objHandler.Set_RMSLoadDone();
+	}
 }

@@ -170,11 +170,17 @@ LRESULT CHandler::OnServerReceive(WPARAM wClientIdx, LPARAM lServerPort)
 			if (strOp == "ID")		Get_MGZIdReport(strArg[0], strArg[1]);
 			if (strOp == "REMOVE")	Get_MGZIdRemove(strArg[0], strArg[1], strArg[2]);
 
-		} else if (strCmd == "CARRIER") {
+		}
+		else if (strCmd == "CARRIER")
+		{
 			if (strOp == "ID")		Get_CarrierIdReport(strArg[0], strArg[1], strArg[2]);
 			if (strOp == "OUT")		Get_CarrierOutReport(strArg[0], strArg[1], strArg[2]);
 			if (strOp == "IN")		Get_CarrierInReport(strArg[0], strArg[1], strArg[2], strArg[3], strArg[4]);
-
+		} 
+		else if (strCmd == "RMS")
+		{
+			if (strOp == "CHECK")		Get_RMSCheck();
+			
 		} 
 	}
 
@@ -338,6 +344,18 @@ void CHandler::Get_RecipeReport(CString sIdxNo, CString sVersion, CString sRcvDa
 	}
 }
 
+void CHandler::Get_RMSCheck()
+{
+	if(gData.bRMSLoadDone[0])
+	{
+		Set_RMSAlreadyDone();
+	}
+	else
+	{
+		//do nothing
+	}
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // Set Command
 
@@ -483,6 +501,20 @@ void CHandler::Set_PPUnloadFail()
 {
 	CString strSend;
 	strSend.Format("RECIPE,FAIL,%s,%s,%s,%s", gMes.sHostLotId, gMes.sHostRecipe, gMes.sCancelCode, gMes.sCancelText);
+	Send_Command(strSend);
+}
+
+void CHandler::Set_RMSLoadDone()
+{
+	CString strSend;
+	strSend.Format("RMS,LOADDONE");
+	Send_Command(strSend);
+}
+
+void CHandler::Set_RMSAlreadyDone()
+{
+	CString strSend;
+	strSend.Format("RMS,ALREADYDONE");
 	Send_Command(strSend);
 }
 

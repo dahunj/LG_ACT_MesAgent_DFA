@@ -3,9 +3,9 @@
 // stdafx.obj에는 미리 컴파일된 형식 정보가 포함됩니다.
 #include "stdafx.h"
 
-std::vector<CIniItem> glistFAIInfo;
-std::vector<CIniItem> glistLightInfo;
-std::vector<CIniItem> glistParamInfo;
+std::vector<CIniItem> glistFAIInfo_PC2;
+std::vector<CIniItem> glistLightInfo_PC1;
+std::vector<CIniItem> glistParamInfo_PC5;
 
 
 CString gsCurrentDir;		// 현재 프로젝트 폴더

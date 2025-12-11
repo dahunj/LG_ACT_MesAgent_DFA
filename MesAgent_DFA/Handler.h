@@ -49,6 +49,8 @@ private:
 	void Get_CarrierInReport(CString sType, CString sLotId, CString sMGZID, CString sCarrierID, CString sSlotNo);
 	void Get_RecipeBodyData(CString sRcvData);
 
+	void Get_RMSCheck();
+
 public:
 	void Send_Command(CString sSend);
 	void Initialize();
@@ -72,6 +74,10 @@ public:
 
 	void Set_RecipeListRequest(BOOL bList);
 	void Set_HostMsg(CString sMsg);
+
+	void Set_RMSLoadDone();
+	void Set_RMSAlreadyDone();
+
 };
 
 extern CHandler g_objHandler;

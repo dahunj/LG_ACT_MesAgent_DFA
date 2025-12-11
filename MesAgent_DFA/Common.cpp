@@ -117,14 +117,18 @@ void CCommon::Clean_Data()
 }
 
 
-BOOL CCommon::LoadIniToVector(const CString& filePath, std::vector<CIniItem>& outVec)
+BOOL CCommon::LoadIniToVector(const CString& filePath, std::vector<CIniItem>& outVec, int &outCnt)
 {
 	CStdioFile file;
+	
+	int nDataCnt = 0;
+	
 	if (!file.Open(filePath, CFile::modeRead | CFile::typeText))
 	{
 		AfxMessageBox(_T("Failed to open ini file: ") + filePath);
 		return FALSE;
 	}
+
 
 	outVec.clear();
 
@@ -164,7 +168,11 @@ BOOL CCommon::LoadIniToVector(const CString& filePath, std::vector<CIniItem>& ou
 		item.value   = value;
 
 		outVec.push_back(item);
+		nDataCnt++;
+		gData.nRMSPgr++;
 	}
+
+	outCnt = nDataCnt;
 
 	file.Close();
 	return TRUE;

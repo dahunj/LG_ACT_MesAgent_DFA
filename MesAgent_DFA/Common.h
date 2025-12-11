@@ -32,7 +32,7 @@ public:
 	void Clean_Data();
 
 
-	BOOL LoadIniToVector(const CString& filePath, std::vector<CIniItem>& outVec);
+	BOOL LoadIniToVector(const CString& filePath, std::vector<CIniItem>& outVec, int &outCnt);
 	BOOL SaveVectorToIni(const CString& filePath, const std::vector<CIniItem>& vec);
 
 };
