@@ -129,7 +129,8 @@ LRESULT CHost::OnServerReceive(WPARAM wClientIdx, LPARAM lServerPort)
 
 		if (nEnd < 0) break;	// 버퍼에 들어오는 중...
 
-		if (nStart < 0 || nStart > nEnd) {
+		if (nStart < 0 || nStart > nEnd) 
+		{
 			strLog.Format("[OnServerReceive] <<Error>> - Start(%d), End(%d).\n%s", nStart, nEnd, m_strRecvCmd);
 			g_objLogFile.Save_HostLog(strLog);
 			m_strRecvCmd.Delete(0, nEnd + 1);	// 쓰레기값이 채워져 있어서...
@@ -147,12 +148,15 @@ LRESULT CHost::OnServerReceive(WPARAM wClientIdx, LPARAM lServerPort)
 
 		m_nRecvCmdCount = atoi(strRecv.Mid(8, 4));	// 4Byte
 
-		if (strRecv.GetAt(12) == '0') {		// Heart Beat
+		if (strRecv.GetAt(12) == '0') 
+		{		// Heart Beat
 //			strMsg.Format("%s : [HeartBeat]", strLog.Left(18));
 //			pMainDlg->Set_HostMsg(strMsg);
 			Reply_HeartBeat();
 
-		} else {
+		}
+		else 
+		{
 			CString strXml = strRecv.Right(strRecv.GetLength() - 13);
 			if (!Extract_Xml(strXml)) return 0;
 
@@ -206,19 +210,26 @@ BOOL CHost::Extract_Xml(CString sXmlData)
 	CXmlNode node = m_xml.GetRoot();
 	m_strStFn = node.GetAttribute("ID");
 
-	if (m_strStFn == "S2F31") {
+	if (m_strStFn == "S2F31") 
+	{
 		CXmlNode nodeTime = m_xml.GetRoot()->GetChild("ITEM")->GetChild("TIME");
 		m_strSetTime = nodeTime.GetAttribute("VALUE", "");
 
-	} else if(m_strStFn == "S1F3") {
+	} 
+	else if(m_strStFn == "S1F3") 
+	{
 		CXmlNodes nodes = m_xml.GetRoot()->GetChild("ITEM")->GetChild("SVIDLIST")->GetChildren();//GetChild("CPLIST");
 		m_nS1F4AckNo = nodes.GetCount();
 
-	} else if(m_strStFn == "S10F3") {
+	}
+	else if(m_strStFn == "S10F3") 
+	{
 		CXmlNode nodeTime = m_xml.GetRoot()->GetChild("ITEM");
 		m_sHostMsg = nodeTime.GetChild("TEXT")->GetAttribute("VALUE");
 
-	} else if (m_strStFn == "S2F49") {
+	} 
+	else if (m_strStFn == "S2F49")
+	{
 		CXmlNode nodeE = m_xml.GetRoot()->GetChild("ITEM")->GetChild("RCMDCP")->GetChild("RCMD");
 		m_strRcmd = nodeE.GetAttribute("VALUE", "");
 
@@ -241,7 +252,9 @@ BOOL CHost::Extract_Xml(CString sXmlData)
 			}
 			Set_AddInfor(gMes.sHostLotId, gMes.sHostProcID, gMes.sHostModel, gMes.sHostRecipe);
 
-		} else if (m_strRcmd == "LOT_ID_FAIL") {
+		}
+		else if (m_strRcmd == "LOT_ID_FAIL") 
+		{
 			CXmlNodes nodesF = m_xml.GetRoot()->GetChild("ITEM")->GetChild("RCMDCP")->GetChild("CPLIST")->GetChildren();
 			int nCount = nodesF.GetCount();
 
@@ -258,7 +271,9 @@ BOOL CHost::Extract_Xml(CString sXmlData)
 			gMes.sCancelCode = nodeE.GetChild("CODE")->GetAttribute("VALUE");
 			gMes.sCancelText = nodeE.GetChild("TEXT")->GetAttribute("VALUE");
 
-		} else if (m_strRcmd == "MGZ_ID_FAIL") {
+		}
+		else if (m_strRcmd == "MGZ_ID_FAIL")
+		{
 			CXmlNodes nodes = m_xml.GetRoot()->GetChild("ITEM")->GetChild("RCMDCP")->GetChild("CPLIST")->GetChildren();
 			int nCount = nodes.GetCount();
 
@@ -274,7 +289,9 @@ BOOL CHost::Extract_Xml(CString sXmlData)
 			gMes.sCancelCode = nodeE.GetChild("CODE")->GetAttribute("VALUE");
 			gMes.sCancelText = nodeE.GetChild("TEXT")->GetAttribute("VALUE");
 
-		} else if (m_strRcmd == "TRAY_ID_FAIL") {
+		}
+		else if (m_strRcmd == "TRAY_ID_FAIL")
+		{
 			CXmlNodes nodes = m_xml.GetRoot()->GetChild("ITEM")->GetChild("RCMDCP")->GetChild("CPLIST")->GetChildren();
 			int nCount = nodes.GetCount();
 
@@ -290,7 +307,9 @@ BOOL CHost::Extract_Xml(CString sXmlData)
 			gMes.sCancelCode = nodeE.GetChild("CODE")->GetAttribute("VALUE");
 			gMes.sCancelText = nodeE.GetChild("TEXT")->GetAttribute("VALUE");
 
-		} else if (m_strRcmd == "PRODUCT_DATA") {
+		}
+		else if (m_strRcmd == "PRODUCT_DATA")
+		{
  			CXmlNodes nodesPD = m_xml.GetRoot()->GetChild("ITEM")->GetChild("RCMDCP")->GetChild("CPLIST")->GetChildren();
  			int nCount = nodesPD.GetCount();
  
@@ -306,13 +325,17 @@ BOOL CHost::Extract_Xml(CString sXmlData)
  				if (strName == "DETAIL")	gMes.sPDHostDetail = strData;
  			}
 
-		} else if (m_strRcmd == "PRODUCT_ID_FAIL") {
+		}
+		else if (m_strRcmd == "PRODUCT_ID_FAIL") 
+		{
 			nodeE = m_xml.GetRoot()->GetChild("ITEM")->GetChild("RCMDCP")->GetChild("RESULT");
 			gMes.sCancelModule = nodeE.GetChild("MODULEID")->GetAttribute("VALUE");
 			gMes.sCancelCode = nodeE.GetChild("CODE")->GetAttribute("VALUE");
 			gMes.sCancelText = nodeE.GetChild("TEXT")->GetAttribute("VALUE");
 
-		} else if (m_strRcmd == "MGZ_ID_CONFIRM") {
+		} 
+		else if (m_strRcmd == "MGZ_ID_CONFIRM")
+		{
 			CXmlNodes nodes = m_xml.GetRoot()->GetChild("ITEM")->GetChild("RCMDCP")->GetChild("CPLIST")->GetChildren();
 			int nCount = nodes.GetCount();
 
@@ -1825,35 +1848,36 @@ int CHost::Test_Receive(CString strRecvSocket)
  
  		m_nRecvCmdCount = atoi(strRecv.Mid(8, 4));	// 4Byte
  
- 		if (strRecv.GetAt(12) == '0') { Send_Command("", FALSE, 0); return 0; }	// Heart Beat
- 
-			CString strXml = strRecv.Right(strRecv.GetLength() - 13);
-			if (!Extract_Xml(strXml)) return 0;
+		if (strRecv.GetAt(12) == '0') { Send_Command("", FALSE, 0); return 0; }	// Heart Beat
 
-			strMsg.Format("%s : %s,%s", strLog.Left(18), m_strStFn, m_strRcmd); 
-			pMainDlg->Set_HostMsg(strMsg);
+		CString strXml = strRecv.Right(strRecv.GetLength() - 13);
+		if (!Extract_Xml(strXml)) return 0;
 
-			if		(m_strStFn == "S1F2") Get_S1F2();	// Are You There Data ==> S1F1 응답
-			else if (m_strStFn == "S1F3") Get_S1F3();	// Current Recipe Name Request
-			else if (m_strStFn == "S2F3") Get_S2F3();	// Link Test Request
-			else if (m_strStFn == "S2F31") Get_S2F31(); // Date and Time Set Request
-			else if (m_strStFn == "S7F19") Get_S7F19();	// Recip List Request
-			else if (m_strStFn == "S10F3") Get_S10F3();	// Terminal Display, Single
-			else if (m_strStFn == "S2F49") {			// Remote Command
-				if		(m_strRcmd == "TRAY_LOT_START")	 Get_S2F49_LotStart();
-				else if (m_strRcmd == "MGZ_ID_CONFIRM")	 Get_S2F49_MGZConfirm();
-				else if (m_strRcmd == "TRAY_ID_CONFIRM") Get_S2F49_CarrierConfirm();
-				else if (m_strRcmd == "LOT_ID_FAIL")	 Get_S2F49_LotCancel();
-				else if (m_strRcmd == "MGZ_ID_FAIL")	 Get_S2F49_MGZCancel();
-				else if (m_strRcmd == "TRAY_ID_FAIL")	 Get_S2F49_CarrierCancel();
-				else if (m_strRcmd == "PRODUCT_DATA")	 Get_S2F49_ProductData();
-				else if (m_strRcmd == "PRODUCT_ID_FAIL") Get_S2F49_Module_Fail();
-				else if (m_strRcmd == "LOT_MODULE_DATA_DETAIL") Get_S2F49_Module_Data();
-				else if (m_strRcmd == "PP_SELECT")				Get_S2F49_PPSelect();
-				else if (m_strRcmd == "PP_UPLOAD_CONFIRM")		Get_S2F49_PPUploadConfirm();
-				else if (m_strRcmd == "PP_UPLOAD_FAIL")			Get_S2F49_PPUploadFail();
-			}
- 	}
+		strMsg.Format("%s : %s,%s", strLog.Left(18), m_strStFn, m_strRcmd); 
+		pMainDlg->Set_HostMsg(strMsg);
+
+		if		(m_strStFn == "S1F2") Get_S1F2();	// Are You There Data ==> S1F1 응답
+		else if (m_strStFn == "S1F3") Get_S1F3();	// Current Recipe Name Request
+		else if (m_strStFn == "S2F3") Get_S2F3();	// Link Test Request
+		else if (m_strStFn == "S2F31") Get_S2F31(); // Date and Time Set Request
+		else if (m_strStFn == "S7F19") Get_S7F19();	// Recip List Request
+		else if (m_strStFn == "S10F3") Get_S10F3();	// Terminal Display, Single
+		else if (m_strStFn == "S2F49") 
+		{			// Remote Command
+			if		(m_strRcmd == "TRAY_LOT_START")	 Get_S2F49_LotStart();
+			else if (m_strRcmd == "MGZ_ID_CONFIRM")	 Get_S2F49_MGZConfirm();
+			else if (m_strRcmd == "TRAY_ID_CONFIRM") Get_S2F49_CarrierConfirm();
+			else if (m_strRcmd == "LOT_ID_FAIL")	 Get_S2F49_LotCancel();
+			else if (m_strRcmd == "MGZ_ID_FAIL")	 Get_S2F49_MGZCancel();
+			else if (m_strRcmd == "TRAY_ID_FAIL")	 Get_S2F49_CarrierCancel();
+			else if (m_strRcmd == "PRODUCT_DATA")	 Get_S2F49_ProductData();
+			else if (m_strRcmd == "PRODUCT_ID_FAIL") Get_S2F49_Module_Fail();
+			else if (m_strRcmd == "LOT_MODULE_DATA_DETAIL") Get_S2F49_Module_Data();
+			else if (m_strRcmd == "PP_SELECT")				Get_S2F49_PPSelect();
+			else if (m_strRcmd == "PP_UPLOAD_CONFIRM")		Get_S2F49_PPUploadConfirm();
+			else if (m_strRcmd == "PP_UPLOAD_FAIL")			Get_S2F49_PPUploadFail();
+		}
+	}
 	return 0;
 }
 
