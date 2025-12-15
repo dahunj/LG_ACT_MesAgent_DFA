@@ -198,7 +198,7 @@ void CMesAgentDlg::OnTimer(UINT_PTR nIDEvent)
 	Check_DeleteLog();	// 오래된 로그 삭제
 
 	DWORD dwTerm = GetTickCount() - g_objHost.Get_LastTime();
-	if (g_objHost.Is_Connected() && g_objHost.Is_HostOnline() && dwTerm > 20000) {
+	if (g_objHost.Is_Connected() && g_objHost.Is_HostOnline() && dwTerm > 60000) {
 		g_objHost.Set_S6F11_ControlState(2);	// 1:Online, 2:Offline
 		g_objHandler.Set_ControlState(2);		// 1:Online, 2:Offline
 	}
@@ -459,6 +459,7 @@ void CMesAgentDlg::Load_RMSData()
 			g_objLogFile.Save_HandlerLog(strLog);
 			gData.bRMSLoadDone[FAI_PC2] = FALSE;
 		}
+		gData.bRMSLoadDone[FAI_PC2] = TRUE;
 		strLog.Format("[LoadIniToVector] <Read Success> - nFAIReadCnt(%d), gData.nFAICnt(%d)\n", nFAIReadCnt, gData.nFAICnt);
 		g_objLogFile.Save_HandlerLog(strLog);
 	}
@@ -471,6 +472,7 @@ void CMesAgentDlg::Load_RMSData()
 			g_objLogFile.Save_HandlerLog(strLog);
 			gData.bRMSLoadDone[LIGHT_PC1] = FALSE;
 		}
+		gData.bRMSLoadDone[LIGHT_PC1] = TRUE;
 		strLog.Format("[LoadIniToVector] <Read Success> - nLightReadCnt(%d), gData.nLightCnt(%d)\n", nLightReadCnt, gData.nLightCnt);
 		g_objLogFile.Save_HandlerLog(strLog);
 	}
@@ -483,6 +485,7 @@ void CMesAgentDlg::Load_RMSData()
 			g_objLogFile.Save_HandlerLog(strLog);
 			gData.bRMSLoadDone[PARAM_PC5] = FALSE;
 		}
+		gData.bRMSLoadDone[PARAM_PC5] = TRUE;
 		strLog.Format("[LoadIniToVector] <Read Success> - nParamReadCnt(%d), gData.nParamCnt(%d)\n", nParamReadCnt, gData.nParamCnt);
 		g_objLogFile.Save_HandlerLog(strLog);
 	}
@@ -490,9 +493,9 @@ void CMesAgentDlg::Load_RMSData()
 	int nCheck = 0;
 	for(int i = 0; i < FILE_COUNT; i++)
 	{
-		if(gData.bRMSLoadDone) nCheck++;
+		if(gData.bRMSLoadDone[i+1]) nCheck++;
 	}
-	if(nCheck == FILE_COUNT-1)
+	if(nCheck == FILE_COUNT)
 	{
 		gData.bRMSLoadDone[0] = TRUE;
 		g_objHandler.Set_RMSLoadDone();

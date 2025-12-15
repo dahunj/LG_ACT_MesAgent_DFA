@@ -659,46 +659,10 @@ void CHost::Set_S7F20()
 
 void CHost::Set_S7F26()
 {
-	CString sT1MName[32] = {"T1_MASTER_DFAI19_USE", "T1_MASTER_DFAI19_NOMINAL", "T1_MASTER_DFAI19_TOL_P", "T1_MASTER_DFAI19_TOL_M",
-							"T1_MASTER_DFAI20_USE", "T1_MASTER_DFAI20_NOMINAL", "T1_MASTER_DFAI20_TOL_P", "T1_MASTER_DFAI20_TOL_M",
-							"T1_MASTER_DFAI21_USE", "T1_MASTER_DFAI21_NOMINAL", "T1_MASTER_DFAI21_TOL_P", "T1_MASTER_DFAI21_TOL_M",
-							"T1_MASTER_DFAI22_USE", "T1_MASTER_DFAI22_NOMINAL", "T1_MASTER_DFAI22_TOL_P", "T1_MASTER_DFAI22_TOL_M",
-							"T1_MASTER_DFAI24_USE", "T1_MASTER_DFAI24_NOMINAL", "T1_MASTER_DFAI24_TOL_P", "T1_MASTER_DFAI24_TOL_M",
-							"T1_MASTER_DFAI26_USE", "T1_MASTER_DFAI26_NOMINAL", "T1_MASTER_DFAI26_TOL_P", "T1_MASTER_DFAI26_TOL_M",
-							"T1_MASTER_DFAI27_USE", "T1_MASTER_DFAI27_NOMINAL", "T1_MASTER_DFAI27_TOL_P", "T1_MASTER_DFAI27_TOL_M",
-							"T1_MASTER_DFAI44_USE", "T1_MASTER_DFAI44_NOMINAL", "T1_MASTER_DFAI44_TOL_P", "T1_MASTER_DFAI44_TOL_M" };
-	CString sT1SName[32] = {"T1_SLAVE_DFAI19_USE",  "T1_SLAVE_DFAI19_NOMINAL",  "T1_SLAVE_DFAI19_TOL_P",  "T1_SLAVE_DFAI19_TOL_M",
-							"T1_SLAVE_DFAI20_USE",  "T1_SLAVE_DFAI20_NOMINAL",  "T1_SLAVE_DFAI20_TOL_P",  "T1_SLAVE_DFAI20_TOL_M",
-							"T1_SLAVE_DFAI21_USE",  "T1_SLAVE_DFAI21_NOMINAL",  "T1_SLAVE_DFAI21_TOL_P",  "T1_SLAVE_DFAI21_TOL_M",
-							"T1_SLAVE_DFAI22_USE",  "T1_SLAVE_DFAI22_NOMINAL",  "T1_SLAVE_DFAI22_TOL_P",  "T1_SLAVE_DFAI22_TOL_M",
-							"T1_SLAVE_DFAI24_USE",  "T1_SLAVE_DFAI24_NOMINAL",  "T1_SLAVE_DFAI24_TOL_P",  "T1_SLAVE_DFAI24_TOL_M",
-							"T1_SLAVE_DFAI26_USE",  "T1_SLAVE_DFAI26_NOMINAL",  "T1_SLAVE_DFAI26_TOL_P",  "T1_SLAVE_DFAI26_TOL_M",
-							"T1_SLAVE_DFAI27_USE",  "T1_SLAVE_DFAI27_NOMINAL",  "T1_SLAVE_DFAI27_TOL_P",  "T1_SLAVE_DFAI27_TOL_M",
-							"T1_SLAVE_DFAI44_USE",  "T1_SLAVE_DFAI44_NOMINAL",  "T1_SLAVE_DFAI44_TOL_P",  "T1_SLAVE_DFAI44_TOL_M" };
-	CString sT2MName[44] = {"T2_MASTER_DFAI05_USE", "T2_MASTER_DFAI05_NOMINAL", "T2_MASTER_DFAI05_TOL_P", "T2_MASTER_DFAI05_TOL_M",
-							"T2_MASTER_DFAI09_USE", "T2_MASTER_DFAI09_NOMINAL", "T2_MASTER_DFAI09_TOL_P", "T2_MASTER_DFAI09_TOL_M",
-							"T2_MASTER_DFAI10_USE", "T2_MASTER_DFAI10_NOMINAL", "T2_MASTER_DFAI10_TOL_P", "T2_MASTER_DFAI10_TOL_M",
-							"T2_MASTER_DFAI11_USE", "T2_MASTER_DFAI11_NOMINAL", "T2_MASTER_DFAI11_TOL_P", "T2_MASTER_DFAI11_TOL_M",
-							"T2_MASTER_DFAI13_USE", "T2_MASTER_DFAI13_NOMINAL", "T2_MASTER_DFAI13_TOL_P", "T2_MASTER_DFAI13_TOL_M",
-							"T2_MASTER_DFAI14_USE", "T2_MASTER_DFAI14_NOMINAL", "T2_MASTER_DFAI14_TOL_P", "T2_MASTER_DFAI14_TOL_M",
-							"T2_MASTER_DFAI29_USE", "T2_MASTER_DFAI29_NOMINAL", "T2_MASTER_DFAI29_TOL_P", "T2_MASTER_DFAI29_TOL_M",
-							"T2_MASTER_DFAI31_USE", "T2_MASTER_DFAI31_NOMINAL", "T2_MASTER_DFAI31_TOL_P", "T2_MASTER_DFAI31_TOL_M",
-							"T2_MASTER_DFAI32_USE", "T2_MASTER_DFAI32_NOMINAL", "T2_MASTER_DFAI32_TOL_P", "T2_MASTER_DFAI32_TOL_M",
-							"T2_MASTER_DFAI33_USE", "T2_MASTER_DFAI33_NOMINAL", "T2_MASTER_DFAI33_TOL_P", "T2_MASTER_DFAI33_TOL_M",
-							"T2_MASTER_DFAI34_USE", "T2_MASTER_DFAI34_NOMINAL", "T2_MASTER_DFAI34_TOL_P", "T2_MASTER_DFAI34_TOL_M" };
-	CString sT2SName[44] = {"T2_SLAVE_DFAI05_USE",  "T2_SLAVE_DFAI05_NOMINAL",  "T2_SLAVE_DFAI05_TOL_P",  "T2_SLAVE_DFAI05_TOL_M",
-							"T2_SLAVE_DFAI09_USE",  "T2_SLAVE_DFAI09_NOMINAL",  "T2_SLAVE_DFAI09_TOL_P",  "T2_SLAVE_DFAI09_TOL_M",
-							"T2_SLAVE_DFAI10_USE",  "T2_SLAVE_DFAI10_NOMINAL",  "T2_SLAVE_DFAI10_TOL_P",  "T2_SLAVE_DFAI10_TOL_M",
-							"T2_SLAVE_DFAI11_USE",  "T2_SLAVE_DFAI11_NOMINAL",  "T2_SLAVE_DFAI11_TOL_P",  "T2_SLAVE_DFAI11_TOL_M",
-							"T2_SLAVE_DFAI13_USE",  "T2_SLAVE_DFAI13_NOMINAL",  "T2_SLAVE_DFAI13_TOL_P",  "T2_SLAVE_DFAI13_TOL_M",
-							"T2_SLAVE_DFAI14_USE",  "T2_SLAVE_DFAI14_NOMINAL",  "T2_SLAVE_DFAI14_TOL_P",  "T2_SLAVE_DFAI14_TOL_M",
-							"T2_SLAVE_DFAI29_USE",  "T2_SLAVE_DFAI29_NOMINAL",  "T2_SLAVE_DFAI29_TOL_P",  "T2_SLAVE_DFAI29_TOL_M",
-							"T2_SLAVE_DFAI31_USE",  "T2_SLAVE_DFAI31_NOMINAL",  "T2_SLAVE_DFAI31_TOL_P",  "T2_SLAVE_DFAI31_TOL_M",
-							"T2_SLAVE_DFAI32_USE",  "T2_SLAVE_DFAI32_NOMINAL",  "T2_SLAVE_DFAI32_TOL_P",  "T2_SLAVE_DFAI32_TOL_M",
-							"T2_SLAVE_DFAI33_USE",  "T2_SLAVE_DFAI33_NOMINAL",  "T2_SLAVE_DFAI33_TOL_P",  "T2_SLAVE_DFAI33_TOL_M",
-							"T2_SLAVE_DFAI34_USE",  "T2_SLAVE_DFAI34_NOMINAL",  "T2_SLAVE_DFAI34_TOL_P",  "T2_SLAVE_DFAI34_TOL_M" };
-
 	CString strSend = "<?xml version=\"1.0\" encoding=\"utf-16\"?>" + CRLF;
+
+	CString strTotal;
+	strTotal.Format("%d", gData.nFAICnt + gData.nLightCnt + gData.nParamCnt);
 
 	strSend += "<EIF VERSION=\"2.0\" ID=\"S7F26\" NAME=\"Formatted Process Program Data\">" + CRLF;
 	strSend += "  <ELEMENT>" + CRLF;
@@ -711,35 +675,32 @@ void CHost::Set_S7F26()
 	strSend += "    <LOTID VALUE=\"" + gMes.sHostLotId + "\" />" + CRLF;
 	strSend += "    <PROCID VALUE=\"" + gMes.sHostProcID + "\" />" + CRLF;
 	strSend += "    <PRODID VALUE=\"" + gMes.sHostModel + "\" />" + CRLF;
-	strSend += "    <PCLIST COUNT=\"152\">" + CRLF;
+	strSend += "    <PCLIST COUNT=\"" + strTotal +"\">" + CRLF;
 
-	for (int i = 0; i < 32; i++) {
-	strSend += "    <LIST>" + CRLF;
-	strSend += "      <CCODE VALUE=\"" + sT1MName[i] + "\" />" + CRLF;
-	strSend += "      <PPARM VALUE=\"" + gData.sBodyData[0][i] + "\" />" + CRLF;
-	strSend += "    </LIST>" + CRLF;
+	for (int i = 0; i < glistFAIInfo_PC2.size(); i++) 
+	{
+		strSend += "    <LIST>" + CRLF;
+		strSend += "      <CCODE VALUE=\"" + glistFAIInfo_PC2[i].key + "\" />" + CRLF;
+		strSend += "      <PPARM VALUE=\"" + glistFAIInfo_PC2[i].value + "\" />" + CRLF;
+		strSend += "    </LIST>" + CRLF;
 	}
 
-	for (int i = 0; i < 32; i++) {
-	strSend += "    <LIST>" + CRLF;
-	strSend += "      <CCODE VALUE=\"" + sT1SName[i] + "\" />" + CRLF;
-	strSend += "      <PPARM VALUE=\"" + gData.sBodyData[1][i] + "\" />" + CRLF;
-	strSend += "    </LIST>" + CRLF;
+	for (int i = 0; i < glistLightInfo_PC1.size(); i++) 
+	{
+		strSend += "    <LIST>" + CRLF;
+		strSend += "      <CCODE VALUE=\"" + glistLightInfo_PC1[i].key + "\" />" + CRLF;
+		strSend += "      <PPARM VALUE=\"" + glistLightInfo_PC1[i].value + "\" />" + CRLF;
+		strSend += "    </LIST>" + CRLF;
 	}
 
-	for (int i = 0; i < 44; i++) {
-	strSend += "    <LIST>" + CRLF;
-	strSend += "      <CCODE VALUE=\"" + sT2MName[i] + "\" />" + CRLF;
-	strSend += "      <PPARM VALUE=\"" + gData.sBodyData[2][i] + "\" />" + CRLF;
-	strSend += "    </LIST>" + CRLF;
+	for (int i = 0; i < glistParamInfo_PC5.size(); i++) 
+	{
+		strSend += "    <LIST>" + CRLF;
+		strSend += "      <CCODE VALUE=\"" + glistParamInfo_PC5[i].key + "\" />" + CRLF;
+		strSend += "      <PPARM VALUE=\"" + glistParamInfo_PC5[i].value + "\" />" + CRLF;
+		strSend += "    </LIST>" + CRLF;
 	}
 
-	for (int i = 0; i < 44; i++) {
-	strSend += "    <LIST>" + CRLF;
-	strSend += "      <CCODE VALUE=\"" + sT2SName[i] + "\" />" + CRLF;
-	strSend += "      <PPARM VALUE=\"" + gData.sBodyData[3][i] + "\" />" + CRLF;
-	strSend += "    </LIST>" + CRLF;
-	}
 
 	strSend += "    </PCLIST>" + CRLF;
 	strSend += "  </ITEM>" + CRLF;

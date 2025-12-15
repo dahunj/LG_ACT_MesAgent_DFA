@@ -186,4 +186,4 @@ extern  GLOVAL_MARGINAL	gMar;
 #define FAI_PC2 1
 #define LIGHT_PC1 2
 #define PARAM_PC5 3
-#define FILE_COUNT 4
+#define FILE_COUNT 3
