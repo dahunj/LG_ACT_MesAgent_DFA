@@ -662,7 +662,7 @@ void CHost::Set_S7F26()
 	CString strSend = "<?xml version=\"1.0\" encoding=\"utf-16\"?>" + CRLF;
 
 	CString strTotal;
-	strTotal.Format("%d", gData.nFAICnt + gData.nLightCnt + gData.nParamCnt);
+	//strTotal.Format("%d", gData.nFAICnt + gData.nLightCnt + gData.nParamCnt);
 
 	strSend += "<EIF VERSION=\"2.0\" ID=\"S7F26\" NAME=\"Formatted Process Program Data\">" + CRLF;
 	strSend += "  <ELEMENT>" + CRLF;
@@ -677,29 +677,29 @@ void CHost::Set_S7F26()
 	strSend += "    <PRODID VALUE=\"" + gMes.sHostModel + "\" />" + CRLF;
 	strSend += "    <PCLIST COUNT=\"" + strTotal +"\">" + CRLF;
 
-	for (int i = 0; i < glistFAIInfo_PC2.size(); i++) 
-	{
-		strSend += "    <LIST>" + CRLF;
-		strSend += "      <CCODE VALUE=\"" + glistFAIInfo_PC2[i].key + "\" />" + CRLF;
-		strSend += "      <PPARM VALUE=\"" + glistFAIInfo_PC2[i].value + "\" />" + CRLF;
-		strSend += "    </LIST>" + CRLF;
-	}
+	//for (int i = 0; i < glistFAIInfo_PC2.size(); i++) 
+	//{
+	//	strSend += "    <LIST>" + CRLF;
+	//	strSend += "      <CCODE VALUE=\"" + glistFAIInfo_PC2[i].key + "\" />" + CRLF;
+	//	strSend += "      <PPARM VALUE=\"" + glistFAIInfo_PC2[i].value + "\" />" + CRLF;
+	//	strSend += "    </LIST>" + CRLF;
+	//}
 
-	for (int i = 0; i < glistLightInfo_PC1.size(); i++) 
-	{
-		strSend += "    <LIST>" + CRLF;
-		strSend += "      <CCODE VALUE=\"" + glistLightInfo_PC1[i].key + "\" />" + CRLF;
-		strSend += "      <PPARM VALUE=\"" + glistLightInfo_PC1[i].value + "\" />" + CRLF;
-		strSend += "    </LIST>" + CRLF;
-	}
+	//for (int i = 0; i < glistLightInfo_PC1.size(); i++) 
+	//{
+	//	strSend += "    <LIST>" + CRLF;
+	//	strSend += "      <CCODE VALUE=\"" + glistLightInfo_PC1[i].key + "\" />" + CRLF;
+	//	strSend += "      <PPARM VALUE=\"" + glistLightInfo_PC1[i].value + "\" />" + CRLF;
+	//	strSend += "    </LIST>" + CRLF;
+	//}
 
-	for (int i = 0; i < glistParamInfo_PC5.size(); i++) 
-	{
-		strSend += "    <LIST>" + CRLF;
-		strSend += "      <CCODE VALUE=\"" + glistParamInfo_PC5[i].key + "\" />" + CRLF;
-		strSend += "      <PPARM VALUE=\"" + glistParamInfo_PC5[i].value + "\" />" + CRLF;
-		strSend += "    </LIST>" + CRLF;
-	}
+	//for (int i = 0; i < glistParamInfo_PC5.size(); i++) 
+	//{
+	//	strSend += "    <LIST>" + CRLF;
+	//	strSend += "      <CCODE VALUE=\"" + glistParamInfo_PC5[i].key + "\" />" + CRLF;
+	//	strSend += "      <PPARM VALUE=\"" + glistParamInfo_PC5[i].value + "\" />" + CRLF;
+	//	strSend += "    </LIST>" + CRLF;
+	//}
 
 
 	strSend += "    </PCLIST>" + CRLF;

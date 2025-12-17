@@ -346,7 +346,7 @@ void CHandler::Get_RecipeReport(CString sIdxNo, CString sVersion, CString sRcvDa
 
 void CHandler::Get_RMSCheck()
 {
-	if(gData.bRMSLoadDone[0])
+	if(gData.bRMSLoad_ALL)
 	{
 		Set_RMSAlreadyDone();
 	}

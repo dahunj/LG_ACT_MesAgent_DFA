@@ -78,12 +78,16 @@ struct CIniItem
 };
 
 
-extern std::vector<CIniItem> glistFAIInfo_PC2;
-extern std::vector<CIniItem> glistLightInfo_PC1;
-extern std::vector<CIniItem> glistParamInfo_PC5;
+extern std::vector<CIniItem> glistFAIInfo[5];
+extern std::vector<CIniItem> glistLightInfo[5];
+extern std::vector<CIniItem> glistParamInfo[5];
 
 
-
+#define PC1 0
+#define PC2 1
+#define PC3 2
+#define PC4 3
+#define PC5 4
 
 
 typedef struct {
@@ -116,12 +120,18 @@ typedef struct {
 	CString		sVersion;
 	CString		sBodyData[4][50];	// 0:T1M-PC2(1~32), 1:T1S-PC4(1~32), 2:T2M-PC3(1~44), 3:T2S-PC5(1~44)
 
-	int			nFAICnt;
-	int			nLightCnt;
-	int			nParamCnt;
+	int			nFAICnt[5];
+	int			nLightCnt[5];
+	int			nParamCnt[5];
 	int			nRMSPgr;
 
-	BOOL		bRMSLoadDone[4]; // 0 : ALL, 1~n : Each file 
+
+	BOOL		bRMSLoad_ALL;
+	BOOL		bRMSLoad_FAI[5];
+	BOOL		bRMSLoad_Light[5];
+	BOOL		bRMSLoad_Param[5];
+
+	
 } GLOVAL_DATA;
 
 typedef struct {
@@ -183,7 +193,5 @@ extern  GLOVAL_IDLE	gIdle;
 extern  GLOVAL_MARGINAL	gMar;
 
 
-#define FAI_PC2 1
-#define LIGHT_PC1 2
-#define PARAM_PC5 3
-#define FILE_COUNT 3
+
+#define FILE_COUNT 15
