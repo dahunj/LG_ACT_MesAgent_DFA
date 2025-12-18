@@ -352,6 +352,7 @@ void CHandler::Get_RMSCheck()
 	}
 	else
 	{
+		g_objCommon.Load_RMSData();
 		//do nothing
 	}
 }

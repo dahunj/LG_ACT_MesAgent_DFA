@@ -123,6 +123,7 @@ typedef struct {
 	int			nFAICnt[5];
 	int			nLightCnt[5];
 	int			nParamCnt[5];
+	int			nTotalCnt;
 	int			nRMSPgr;
 
 

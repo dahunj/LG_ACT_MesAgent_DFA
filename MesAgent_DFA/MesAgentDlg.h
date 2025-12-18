@@ -60,7 +60,8 @@ public:
 	void Set_HostMsg(CString sMsg);
 	void Set_VisionConnect(BOOL bConnected);
 
-	void Load_RMSData();
+	
 
 	
+	afx_msg void OnBnClickedBtnRmsLoad();
 };

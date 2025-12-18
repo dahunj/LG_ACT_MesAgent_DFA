@@ -35,6 +35,8 @@ public:
 	BOOL LoadIniToVector(const CString& filePath, std::vector<CIniItem>& outVec, int &outCnt);
 	BOOL SaveVectorToIni(const CString& filePath, const std::vector<CIniItem>& vec);
 
+	void Load_RMSData();
+
 };
 
 extern CCommon g_objCommon;

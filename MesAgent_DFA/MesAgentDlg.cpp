@@ -49,6 +49,7 @@ BEGIN_MESSAGE_MAP(CMesAgentDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BTN_VISION_OPEN, &CMesAgentDlg::OnBnClickedBtnVisionOpen)
 	ON_BN_CLICKED(IDC_BTN_VISION_CLOSE, &CMesAgentDlg::OnBnClickedBtnVisionClose)
 	ON_BN_CLICKED(IDC_BTN_VISION_REQUEST, &CMesAgentDlg::OnBnClickedBtnVisionConnect)
+	ON_BN_CLICKED(IDC_BTN_RMS_LOAD, &CMesAgentDlg::OnBnClickedBtnRmsLoad)
 END_MESSAGE_MAP()
 
 // CMesAgentDlg 메시지 처리기
@@ -77,9 +78,9 @@ BOOL CMesAgentDlg::OnInitDialog()
 	SetWindowText(sTemp);
 	g_objCommon.Clean_Data();
 
-	int nTotal = 0;
+	
 	gData.nRMSPgr = 0;
-
+	gData.nTotalCnt = 0;
 
 	
 	for(int i = 0; i < 5; i++)
@@ -93,7 +94,7 @@ BOOL CMesAgentDlg::OnInitDialog()
 		}
 
 		gData.nFAICnt[i] = INI.Get_Integer("FAI_COUNT","FAI_INSPECT_COUNT_PC"+sTemp, 0);
-		nTotal += gData.nFAICnt[i]; 
+		gData.nTotalCnt += gData.nFAICnt[i]; 
 	}
 
 	for(int i = 0; i < 5; i++)
@@ -106,25 +107,12 @@ BOOL CMesAgentDlg::OnInitDialog()
 			return FALSE; 
 		}
 
-		gData.nFAICnt[i] = INI.Get_Integer("LIGHT_COUNT","AVI_LIGHT_COUNT_PC"+sTemp, 0);
-		nTotal += gData.nFAICnt[i]; 
+		gData.nLightCnt[i] = INI.Get_Integer("LIGHT_COUNT","AVI_LIGHT_COUNT_PC"+sTemp, 0);
+		gData.nTotalCnt += gData.nLightCnt[i]; 
 	}
 
 
-	for(int i = 0; i < 5; i++)
-	{
-		sTemp.Format("%d", i+1);
-		CIniFileCS INI("D:\\Vision Data\\Recipe\\InspectLightInfo_PC"+sTemp+".ini");
-		if (!INI.Check_File()) 
-		{ 
-			AfxMessageBox("InspectLightInfo_PC"+sTemp+".ini File Not Found!!!");
-			return FALSE; 
-		}
-
-		gData.nFAICnt[i] = INI.Get_Integer("LIGHT_COUNT","AVI_LIGHT_COUNT_PC"+sTemp, 0);
-		nTotal += gData.nFAICnt[i]; 
-	}
-
+	
 	for(int i = 0; i < 5; i++)
 	{
 		sTemp.Format("%d", i+1);
@@ -135,20 +123,13 @@ BOOL CMesAgentDlg::OnInitDialog()
 			return FALSE; 
 		}
 
-		gData.nFAICnt[i] = INI.Get_Integer("AVI_COUNT","AVI_INSPECT_COUNT_PC"+sTemp, 0);
-		nTotal += gData.nFAICnt[i]; 
+		gData.nParamCnt[i] = INI.Get_Integer("AVI_COUNT","AVI_INSPECT_COUNT_PC"+sTemp, 0);
+		gData.nTotalCnt += gData.nParamCnt[i]; 
 	}
-
-
 	
-	/*gData.nFAICnt = 96;
-	gData.nLightCnt = 543;
-	gData.nParamCnt = 20;*/
-	
-		
-	/*nTotal+= gData.nLightCnt;
-	nTotal+= gData.nParamCnt;*/
-	m_PgrCtrlRMS.SetRange(0,nTotal);
+	m_PgrCtrlRMS.SetRange(0,gData.nTotalCnt);
+
+	g_objCommon.Load_RMSData();
 
 
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
@@ -264,6 +245,7 @@ void CMesAgentDlg::OnTimer(UINT_PTR nIDEvent)
 	}
 
 	m_PgrCtrlRMS.SetPos(gData.nRMSPgr);
+	
 
 	SetTimer(0, 1000, NULL);
 	CDialogEx::OnTimer(nIDEvent);
@@ -480,7 +462,8 @@ void CMesAgentDlg::Set_HostMsg(CString sMsg)
 
 void CMesAgentDlg::OnBnClickedBtnTest()
 {
-	Load_RMSData();
+	gData.bRMSLoad_ALL = FALSE;
+	//g_objCommon.Load_RMSData();
 	//g_objHost.Test_Set();
 }
 
@@ -499,89 +482,8 @@ void CMesAgentDlg::Test_Data()
 	g_objHost.Test_Send();
 }
 
-void CMesAgentDlg::Load_RMSData()
+
+void CMesAgentDlg::OnBnClickedBtnRmsLoad()
 {
-	CString strLog, strTemp;
-
-	//항목 개수 체크 
-
-	int nFAIReadCnt[5], nLightReadCnt[5], nParamReadCnt[5];
-
-	memset(nFAIReadCnt, 0, sizeof(int)*5);
-	memset(nLightReadCnt, 0, sizeof(int)*5);
-	memset(nParamReadCnt, 0, sizeof(int)*5);
-
-	memset(gData.bRMSLoad_FAI, 0, sizeof(BOOL)*5);
-	memset(gData.bRMSLoad_Light, 0, sizeof(BOOL)*5);
-	memset(gData.bRMSLoad_Param, 0, sizeof(BOOL)*5);
-	
-
-	//RMS_Validation.ini 파일에서 파일 개수들 불러와서 비교하기 
-
-	for(int i = 0; i < 5; i++)
-	{
-		strTemp.Format("%d", i+1);
-
-		if(g_objCommon.LoadIniToVector("D:\\RMS\\FaiMeasureSpec_DFA_PC"+strTemp+".ini", glistFAIInfo[i], nFAIReadCnt[0]))
-		{
-			if(nFAIReadCnt[i] != gData.nFAICnt[i])
-			{
-				strLog.Format("[LoadIniToVector] <Cnt Mismatch> - nFAIReadCnt(%d), gData.nFAICnt(%d)\n", nFAIReadCnt[i], gData.nFAICnt);
-				g_objLogFile.Save_HandlerLog(strLog);
-				gData.bRMSLoad_FAI[i] = FALSE;
-			}
-			gData.bRMSLoad_FAI[i] = TRUE;
-			strLog.Format("[LoadIniToVector] <Read Success> - nFAIReadCnt(%d), gData.nFAICnt(%d)\n", nFAIReadCnt[i], gData.nFAICnt);
-			g_objLogFile.Save_HandlerLog(strLog);
-		}
-	}
-
-	for(int i = 0; i < 5; i++)
-	{
-		if(g_objCommon.LoadIniToVector("D:\\RMS\\InspectLightInfo_PC"+strTemp+".ini", glistLightInfo[i], nLightReadCnt[i]))
-		{
-			if(nLightReadCnt[i] != gData.nLightCnt[i])
-			{
-				strLog.Format("[LoadIniToVector] <Cnt Mismatch> - nLightReadCnt(%d), gData.nLightCnt(%d)\n", nLightReadCnt[i], gData.nLightCnt);
-				g_objLogFile.Save_HandlerLog(strLog);
-				gData.bRMSLoad_Light[i] = FALSE;
-			}
-			gData.bRMSLoad_Light[i] = TRUE;
-			strLog.Format("[LoadIniToVector] <Read Success> - nLightReadCnt(%d), gData.nLightCnt(%d)\n", nLightReadCnt[i], gData.nLightCnt);
-			g_objLogFile.Save_HandlerLog(strLog);
-		}
-	}
-	
-	for(int i = 0; i < 5; i++)
-	{
-		if(g_objCommon.LoadIniToVector("D:\\RMS\\InspectParam_PC5.ini", glistParamInfo[i], nParamReadCnt[i]))
-		{
-			if(nParamReadCnt[i] != gData.nParamCnt[i])
-			{
-				strLog.Format("[LoadIniToVector] <Cnt Mismatch> - nParamReadCnt(%d), gData.nParamCnt(%d)\n", nParamReadCnt[i], gData.nParamCnt);
-				g_objLogFile.Save_HandlerLog(strLog);
-				gData.bRMSLoad_Param[i] = FALSE;
-			}
-			gData.bRMSLoad_Param[i] = TRUE;
-			strLog.Format("[LoadIniToVector] <Read Success> - nParamReadCnt(%d), gData.nParamCnt(%d)\n", nParamReadCnt[i], gData.nParamCnt);
-			g_objLogFile.Save_HandlerLog(strLog);
-		}
-
-	}
-
-	
-	int nCheck = 0;
-	gData.bRMSLoad_ALL = FALSE;
-	for(int i = 0; i < FILE_COUNT; i++)
-	{
-		if(gData.bRMSLoad_FAI[i]) nCheck++;
-		if(gData.bRMSLoad_Light[i]) nCheck++;
-		if(gData.bRMSLoad_Param[i]) nCheck++;
-	}
-
-	if(nCheck == FILE_COUNT)
-	{
-		gData.bRMSLoad_ALL = TRUE;
-		g_objHandler.Set_RMSLoadDone();
-	}
+	g_objCommon.Load_RMSData();
 }

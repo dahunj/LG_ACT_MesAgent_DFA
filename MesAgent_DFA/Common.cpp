@@ -3,6 +3,8 @@
 #include "stdafx.h"
 #include "Common.h"
 #include "Inspector.h"
+#include "Handler.h"
+#include "LogFile.h"
 
 #define DELETE_LOG_DAY	 180
 
@@ -213,4 +215,109 @@ BOOL CCommon::SaveVectorToIni(const CString& filePath, const std::vector<CIniIte
 
 	file.Close();
 	return TRUE;
+}
+
+
+
+void CCommon::Load_RMSData()
+{
+	CString strLog, strTemp;
+
+	//항목 개수 체크 
+
+	int nFAIReadCnt[5], nLightReadCnt[5], nParamReadCnt[5];
+
+	memset(nFAIReadCnt, 0, sizeof(int)*5);
+	memset(nLightReadCnt, 0, sizeof(int)*5);
+	memset(nParamReadCnt, 0, sizeof(int)*5);
+
+	memset(gData.bRMSLoad_FAI, 0, sizeof(BOOL)*5);
+	memset(gData.bRMSLoad_Light, 0, sizeof(BOOL)*5);
+	memset(gData.bRMSLoad_Param, 0, sizeof(BOOL)*5);
+
+
+	//RMS_Validation.ini 파일에서 파일 개수들 불러와서 비교하기 
+
+	for(int i = 0; i < 5; i++)
+	{
+		strTemp.Format("%d", i+1);
+
+		if(g_objCommon.LoadIniToVector("D:\\Vision Data\\Recipe\\FaiMeasureSpec_DFA_PC"+strTemp+".ini", glistFAIInfo[i], nFAIReadCnt[i]))
+		{
+			if(nFAIReadCnt[i]-1 != gData.nFAICnt[i])
+			{
+				strLog.Format("[LoadIniToVector] <Cnt Mismatch> - nFAIReadCnt(%d), gData.nFAICnt(%d)\n", nFAIReadCnt[i], gData.nFAICnt[i]);
+				AfxMessageBox(strLog);
+				g_objLogFile.Save_HandlerLog(strLog);
+				gData.bRMSLoad_FAI[i] = FALSE;
+			}
+			else
+			{
+				gData.bRMSLoad_FAI[i] = TRUE;
+				strLog.Format("[LoadIniToVector] <Read Success> - nFAIReadCnt(%d), gData.nFAICnt(%d)\n", nFAIReadCnt[i], gData.nFAICnt[i]);
+				g_objLogFile.Save_HandlerLog(strLog);
+			}
+
+		}
+	}
+
+	for(int i = 0; i < 5; i++)
+	{
+		strTemp.Format("%d", i+1);
+		if(g_objCommon.LoadIniToVector("D:\\Vision Data\\Recipe\\InspectLightInfo_PC"+strTemp+".ini", glistLightInfo[i], nLightReadCnt[i]))
+		{
+			if(nLightReadCnt[i]-1 != gData.nLightCnt[i])
+			{
+				strLog.Format("[LoadIniToVector] <Cnt Mismatch> - nLightReadCnt(%d), gData.nLightCnt(%d)\n", nLightReadCnt[i], gData.nLightCnt[i]);
+				AfxMessageBox(strLog);
+				g_objLogFile.Save_HandlerLog(strLog);
+				gData.bRMSLoad_Light[i] = FALSE;
+			}
+			else
+			{
+				gData.bRMSLoad_Light[i] = TRUE;
+				strLog.Format("[LoadIniToVector] <Read Success> - nLightReadCnt(%d), gData.nLightCnt(%d)\n", nLightReadCnt[i], gData.nLightCnt[i]);
+				g_objLogFile.Save_HandlerLog(strLog);
+			}
+
+		}
+	}
+
+	for(int i = 0; i < 5; i++)
+	{
+		strTemp.Format("%d", i+1);
+		if(g_objCommon.LoadIniToVector("D:\\Vision Data\\Recipe\\InspectParam_PC"+strTemp+".ini", glistParamInfo[i], nParamReadCnt[i]))
+		{
+			if(nParamReadCnt[i]-1 != gData.nParamCnt[i])
+			{
+				strLog.Format("[LoadIniToVector] <Cnt Mismatch> - nParamReadCnt(%d), gData.nParamCnt(%d)\n", nParamReadCnt[i], gData.nParamCnt[i]);
+				AfxMessageBox(strLog);
+				g_objLogFile.Save_HandlerLog(strLog);
+				gData.bRMSLoad_Param[i] = FALSE;
+			}
+			else
+			{
+				gData.bRMSLoad_Param[i] = TRUE;
+				strLog.Format("[LoadIniToVector] <Read Success> - nParamReadCnt(%d), gData.nParamCnt(%d)\n", nParamReadCnt[i], gData.nParamCnt[i]);
+				g_objLogFile.Save_HandlerLog(strLog);
+			}			
+		}
+	}
+
+
+	int nCheck = 0;
+	gData.bRMSLoad_ALL = FALSE;
+	for(int i = 0; i < 5; i++)
+	{
+		if(gData.bRMSLoad_FAI[i]) nCheck++;
+		if(gData.bRMSLoad_Light[i]) nCheck++;
+		if(gData.bRMSLoad_Param[i]) nCheck++;
+	}
+
+	if(nCheck == FILE_COUNT)
+	{
+		gData.bRMSLoad_ALL = TRUE;
+		AfxMessageBox("RMS Data Load Success");
+		g_objHandler.Set_RMSLoadDone();
+	}
 }
