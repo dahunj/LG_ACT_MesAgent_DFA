@@ -6,7 +6,7 @@
 std::vector<CIniItem> glistFAIInfo[5];
 std::vector<CIniItem> glistLightInfo[5];
 std::vector<CIniItem> glistParamInfo[5];
-
+vectorPair vecHandlerData;
 
 CString gsCurrentDir;		// 현재 프로젝트 폴더
 

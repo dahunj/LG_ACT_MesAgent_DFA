@@ -462,7 +462,9 @@ void CMesAgentDlg::Set_HostMsg(CString sMsg)
 
 void CMesAgentDlg::OnBnClickedBtnTest()
 {
-	gData.bRMSLoad_ALL = FALSE;
+
+	g_objCommon.BuildDataIdValueVector("D:\\RMS\\EquipData.ini", "D:\\RMS\\MoveData.ini", vecHandlerData);
+	//gData.bRMSLoad_ALL = FALSE;
 	//g_objCommon.Load_RMSData();
 	//g_objHost.Test_Set();
 }
@@ -486,4 +488,5 @@ void CMesAgentDlg::Test_Data()
 void CMesAgentDlg::OnBnClickedBtnRmsLoad()
 {
 	g_objCommon.Load_RMSData();
+	
 }

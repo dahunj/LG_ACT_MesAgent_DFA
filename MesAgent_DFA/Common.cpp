@@ -321,3 +321,466 @@ void CCommon::Load_RMSData()
 		g_objHandler.Set_RMSLoadDone();
 	}
 }
+
+
+
+
+CString CCommon::ReadIniString(const CString& iniPath, const CString& section, const CString& key)
+{
+	TCHAR buf[512] = {0};
+	::GetPrivateProfileString(section, key, _T(""), buf, 512, iniPath);
+	return CString(buf);
+}
+
+
+bool CCommon::TryFindEquipValue(const CString& equipIniPath, const CString& dataId, CString& outValue)
+{
+	if (dataId.Left(3) != _T("EQ_"))
+		return false;
+
+	CString key = dataId.Mid(3); // EQ_ 제거
+
+	// EquipData.ini에서 키가 있을 수 있는 섹션들 (필요시 추가)
+	static const CString sections[] = {
+		_T("EQUIPMENT"),
+		_T("OPTION"),
+		_T("TRAY"),
+		_T("PITCH"),
+		_T("DELAY_TIME"),
+		_T("TOWER"),
+		_T("BUZZER"),
+		_T("HIDDEN"),
+		_T("DRY_RUN"),
+		_T("DAY_TOTAL"),
+		_T("NOTUSE"),
+		_T("TIME_OVER"),
+	};
+
+	for (int i = 0; i < (int)(sizeof(sections)/sizeof(sections[0])); ++i)
+	{
+		CString v = ReadIniString(equipIniPath, sections[i], key);
+		if (!v.IsEmpty())
+		{
+			outValue = v;
+			return true;
+		}
+	}
+	return false;
+}
+
+bool CCommon::IniKeyExists(const CString& iniPath, const CString& section, const CString& key)
+{
+	TCHAR buf[2] = {0};
+	::GetPrivateProfileString(section, key, _T(""), buf, 2, iniPath);
+	return (buf[0] != 0);
+}
+
+
+CString CCommon::StripNumberPrefix(const CString& section)
+{
+	// "11_LOAD_STAGE_Y1" -> "LOAD_STAGE_Y1"
+	int pos = section.Find(_T('_'));
+	if (pos < 0) return section;
+
+	// 앞부분이 숫자인지 확인
+	CString head = section.Left(pos);
+	for (int i=0;i<head.GetLength();++i)
+		if (head[i] < _T('0') || head[i] > _T('9'))
+			return section; // 숫자 아닌 경우 그대로
+
+	return section.Mid(pos+1);
+}
+
+std::map<CString, CString>& CCommon::GetMoveKeyRuleMap()
+{
+	static std::map<CString, CString> s_map;
+	if (!s_map.empty())
+		return s_map;
+
+	// ===== LOAD_STAGE_Y1 / Y2 : LOAD, UNLOAD =====
+	s_map[_T("LOAD_STAGE_Y1|LOAD")]   = _T("00");
+	s_map[_T("LOAD_STAGE_Y1|UNLOAD")] = _T("02");
+	s_map[_T("LOAD_STAGE_Y2|LOAD")]   = _T("00");
+	s_map[_T("LOAD_STAGE_Y2|UNLOAD")] = _T("02");
+
+	// ===== GOOD_STAGE_Y1 / Y2 : LOAD, ALIGN =====
+	s_map[_T("GOOD_STAGE_Y1|LOAD")]  = _T("00");
+	s_map[_T("GOOD_STAGE_Y1|ALIGN")] = _T("06");
+	s_map[_T("GOOD_STAGE_Y2|LOAD")]  = _T("00");
+	s_map[_T("GOOD_STAGE_Y2|ALIGN")] = _T("06");
+
+	// ===== NG_STAGE_Y1 / Y2 : LOAD, ALIGN =====
+	s_map[_T("NG_STAGE_Y1|LOAD")]  = _T("00");
+	s_map[_T("NG_STAGE_Y1|ALIGN")] = _T("06");
+	s_map[_T("NG_STAGE_Y2|LOAD")]  = _T("00");
+	s_map[_T("NG_STAGE_Y2|ALIGN")] = _T("06");
+
+	// ===== LOAD_PICKER_* : LOAD_STAGE_1, LOAD_STAGE_2, BOTTOM, ALIGN =====
+	// X1
+	s_map[_T("LOAD_PICKER_X1|LOAD_STAGE_1")] = _T("01");
+	s_map[_T("LOAD_PICKER_X1|LOAD_STAGE_2")] = _T("02");
+	s_map[_T("LOAD_PICKER_X1|BOTTOM")]       = _T("03");
+	s_map[_T("LOAD_PICKER_X1|ALIGN")]        = _T("04");
+	// Y1
+	s_map[_T("LOAD_PICKER_Y1|LOAD_STAGE_1")] = _T("01");
+	s_map[_T("LOAD_PICKER_Y1|LOAD_STAGE_2")] = _T("02");
+	s_map[_T("LOAD_PICKER_Y1|BOTTOM")]       = _T("03");
+	s_map[_T("LOAD_PICKER_Y1|ALIGN")]        = _T("04");
+	// Z1
+	s_map[_T("LOAD_PICKER_Z1|LOAD_STAGE_1")] = _T("01");
+	s_map[_T("LOAD_PICKER_Z1|LOAD_STAGE_2")] = _T("02");
+	s_map[_T("LOAD_PICKER_Z1|BOTTOM")]       = _T("03");
+	s_map[_T("LOAD_PICKER_Z1|ALIGN")]        = _T("04");
+	// P1
+	s_map[_T("LOAD_PICKER_P1|LOAD_STAGE_1")] = _T("01");
+	s_map[_T("LOAD_PICKER_P1|LOAD_STAGE_2")] = _T("02");
+	s_map[_T("LOAD_PICKER_P1|BOTTOM")]       = _T("03");
+	s_map[_T("LOAD_PICKER_P1|ALIGN")]        = _T("04");
+
+	// X2
+	s_map[_T("LOAD_PICKER_X2|LOAD_STAGE_1")] = _T("01");
+	s_map[_T("LOAD_PICKER_X2|LOAD_STAGE_2")] = _T("02");
+	s_map[_T("LOAD_PICKER_X2|BOTTOM")]       = _T("03");
+	s_map[_T("LOAD_PICKER_X2|ALIGN")]        = _T("04");
+	// Y2
+	s_map[_T("LOAD_PICKER_Y2|LOAD_STAGE_1")] = _T("01");
+	s_map[_T("LOAD_PICKER_Y2|LOAD_STAGE_2")] = _T("02");
+	s_map[_T("LOAD_PICKER_Y2|BOTTOM")]       = _T("03");
+	s_map[_T("LOAD_PICKER_Y2|ALIGN")]        = _T("04");
+	// Z2
+	s_map[_T("LOAD_PICKER_Z2|LOAD_STAGE_1")] = _T("01");
+	s_map[_T("LOAD_PICKER_Z2|LOAD_STAGE_2")] = _T("02");
+	s_map[_T("LOAD_PICKER_Z2|BOTTOM")]       = _T("03");
+	s_map[_T("LOAD_PICKER_Z2|ALIGN")]        = _T("04");
+	// P2
+	s_map[_T("LOAD_PICKER_P2|LOAD_STAGE_1")] = _T("01");
+	s_map[_T("LOAD_PICKER_P2|LOAD_STAGE_2")] = _T("02");
+	s_map[_T("LOAD_PICKER_P2|BOTTOM")]       = _T("03");
+	s_map[_T("LOAD_PICKER_P2|ALIGN")]        = _T("04");
+
+	// ===== INSPECT_STAGE_X1~X4 : TOP1, TOP2, UNLOAD =====
+	s_map[_T("INSPECT_STAGE_X1|TOP1")]   = _T("01");
+	s_map[_T("INSPECT_STAGE_X1|TOP2")]   = _T("02");
+	s_map[_T("INSPECT_STAGE_X1|UNLOAD")] = _T("03");
+
+	s_map[_T("INSPECT_STAGE_X2|TOP1")]   = _T("01");
+	s_map[_T("INSPECT_STAGE_X2|TOP2")]   = _T("02");
+	s_map[_T("INSPECT_STAGE_X2|UNLOAD")] = _T("03");
+
+	s_map[_T("INSPECT_STAGE_X3|TOP1")]   = _T("01");
+	s_map[_T("INSPECT_STAGE_X3|TOP2")]   = _T("02");
+	s_map[_T("INSPECT_STAGE_X3|UNLOAD")] = _T("03");
+
+	s_map[_T("INSPECT_STAGE_X4|TOP1")]   = _T("01");
+	s_map[_T("INSPECT_STAGE_X4|TOP2")]   = _T("02");
+	s_map[_T("INSPECT_STAGE_X4|UNLOAD")] = _T("03");
+
+	// ===== UNLOAD_PICKER_X1/X2 : INSPECTION_STAGE_1~4 =====
+	// X는 실제 ini에서 05~08이 inspection stage 1~4로 쓰이는 패턴 (Excel MD_ 기준)
+	s_map[_T("UNLOAD_PICKER_X1|INSPECTION_STAGE_1")] = _T("05");
+	s_map[_T("UNLOAD_PICKER_X1|INSPECTION_STAGE_2")] = _T("06");
+	s_map[_T("UNLOAD_PICKER_X1|INSPECTION_STAGE_3")] = _T("07");
+	s_map[_T("UNLOAD_PICKER_X1|INSPECTION_STAGE_4")] = _T("08");
+
+	s_map[_T("UNLOAD_PICKER_X2|INSPECTION_STAGE_1")] = _T("05");
+	s_map[_T("UNLOAD_PICKER_X2|INSPECTION_STAGE_2")] = _T("06");
+	s_map[_T("UNLOAD_PICKER_X2|INSPECTION_STAGE_3")] = _T("07");
+	s_map[_T("UNLOAD_PICKER_X2|INSPECTION_STAGE_4")] = _T("08");
+
+	// ===== UNLOAD_PICKER_Y1/Y2/Z1/Z2 : INSPECTION_STAGE_1~4, GOOD_STAGE_1~2, NG_STAGE_1~2 =====
+	// Y/Z는 01~04가 inspection 1~4, 05~06 good 1~2, 07~08 ng 1~2 패턴 (Excel MD_ 기준)
+#define ADD_UNLOAD_YZ_RULES(CANON) \
+	s_map[_T(CANON "|INSPECTION_STAGE_1")] = _T("01"); \
+	s_map[_T(CANON "|INSPECTION_STAGE_2")] = _T("02"); \
+	s_map[_T(CANON "|INSPECTION_STAGE_3")] = _T("03"); \
+	s_map[_T(CANON "|INSPECTION_STAGE_4")] = _T("04"); \
+	s_map[_T(CANON "|GOOD_STAGE_1")]       = _T("05"); \
+	s_map[_T(CANON "|GOOD_STAGE_2")]       = _T("06"); \
+	s_map[_T(CANON "|NG_STAGE_1")]         = _T("07"); \
+	s_map[_T(CANON "|NG_STAGE_2")]         = _T("08");
+
+	ADD_UNLOAD_YZ_RULES("UNLOAD_PICKER_Y1");
+	ADD_UNLOAD_YZ_RULES("UNLOAD_PICKER_Y2");
+	ADD_UNLOAD_YZ_RULES("UNLOAD_PICKER_Z1");
+	ADD_UNLOAD_YZ_RULES("UNLOAD_PICKER_Z2");
+
+#undef ADD_UNLOAD_YZ_RULES
+
+	// ===== UNLOAD_PICKER_P1/P2 : GOOD_STAGE, INSPECTION_STAGE, NG_STAGE =====
+	// P는 3상태만 쓰이므로 01/02/03 매핑 (Excel MD_ 기준)
+	s_map[_T("UNLOAD_PICKER_P1|GOOD_STAGE")]       = _T("01");
+	s_map[_T("UNLOAD_PICKER_P1|INSPECTION_STAGE")] = _T("02");
+	s_map[_T("UNLOAD_PICKER_P1|NG_STAGE")]         = _T("03");
+
+	s_map[_T("UNLOAD_PICKER_P2|GOOD_STAGE")]       = _T("01");
+	s_map[_T("UNLOAD_PICKER_P2|INSPECTION_STAGE")] = _T("02");
+	s_map[_T("UNLOAD_PICKER_P2|NG_STAGE")]         = _T("03");
+
+	// ===== TOP1_* : VISION, ANGLE =====
+	s_map[_T("TOP1_LIGHT_Z|VISION")] = _T("00");
+	s_map[_T("TOP1_LIGHT_Z|ANGLE")]  = _T("02");
+
+	s_map[_T("TOP1_ANGLE_Y|VISION")] = _T("00");
+	s_map[_T("TOP1_ANGLE_Y|ANGLE")]  = _T("02");
+
+	s_map[_T("TOP1_VISION_Z|VISION")] = _T("00");
+	s_map[_T("TOP1_VISION_Z|ANGLE")]  = _T("02");
+
+	// ===== TOP2_VISION_Z : VISION only =====
+	s_map[_T("TOP2_VISION_Z|VISION")] = _T("00");
+
+	return s_map;
+}
+
+
+// canonSection + suffix로 iniKey 반환 (겹침 해결)
+bool CCommon::ResolveMoveKeyBySectionAndSuffix(const CString& canonSection,const CString& suffix,CString& outIniKey)
+{
+	CString k;
+	k.Format(_T("%s|%s"), canonSection.GetString(), suffix.GetString());
+
+	const auto& m = GetMoveKeyRuleMap();
+	auto it = m.find(k);
+	if (it == m.end())
+		return false;
+
+	outIniKey = it->second;
+	return true;
+}
+
+
+// 대표적인 suffix -> ini key 규칙(필요시 확장)
+bool CCommon::ResolveMoveKeyFallbackByExistingKey(
+	const CString& moveIniPath,
+	const CString& bestSection,    // 실제 섹션명 (숫자 포함 가능)
+	const CString& canonSection,   // StripNumberPrefix(bestSection)
+	const CString& suffix,
+	CString& outIniKey
+	)
+{
+	{
+		CString k;
+		k.Format(_T("%s|%s"), canonSection.GetString(), suffix.GetString());
+		const auto& m = GetMoveKeyRuleMap();
+		auto it = m.find(k);
+		if (it != m.end())
+		{
+			if (IniKeyExists(moveIniPath, bestSection, it->second))
+			{
+				outIniKey = it->second;
+				return true;
+			}
+		}
+	}
+
+	// 1) LOAD_PICKER_* 공통 (LOAD_STAGE_1/2/BOTTOM/ALIGN)
+	if (suffix == _T("LOAD_STAGE_1"))
+	{
+		if (IniKeyExists(moveIniPath, bestSection, _T("01"))) { outIniKey = _T("01"); return true; }
+	}
+	if (suffix == _T("LOAD_STAGE_2"))
+	{
+		if (IniKeyExists(moveIniPath, bestSection, _T("02"))) { outIniKey = _T("02"); return true; }
+	}
+	if (suffix == _T("BOTTOM"))
+	{
+		if (IniKeyExists(moveIniPath, bestSection, _T("03"))) { outIniKey = _T("03"); return true; }
+	}
+	if (suffix == _T("ALIGN"))
+	{
+		// stage Y들은 ALIGN이 06인 케이스가 있으므로 06 우선, 없으면 04
+		if (IniKeyExists(moveIniPath, bestSection, _T("06"))) { outIniKey = _T("06"); return true; }
+		if (IniKeyExists(moveIniPath, bestSection, _T("04"))) { outIniKey = _T("04"); return true; }
+	}
+
+	// 2) LOAD/UNLOAD
+	if (suffix == _T("LOAD"))
+	{
+		if (IniKeyExists(moveIniPath, bestSection, _T("00"))) { outIniKey = _T("00"); return true; }
+	}
+	if (suffix == _T("UNLOAD"))
+	{
+		if (IniKeyExists(moveIniPath, bestSection, _T("02"))) { outIniKey = _T("02"); return true; }
+		if (IniKeyExists(moveIniPath, bestSection, _T("03"))) { outIniKey = _T("03"); return true; }
+	}
+
+	// 3) INSPECT_STAGE_X* : TOP1/TOP2/UNLOAD
+	if (suffix == _T("TOP1"))
+	{
+		if (IniKeyExists(moveIniPath, bestSection, _T("01"))) { outIniKey = _T("01"); return true; }
+	}
+	if (suffix == _T("TOP2"))
+	{
+		if (IniKeyExists(moveIniPath, bestSection, _T("02"))) { outIniKey = _T("02"); return true; }
+	}
+
+	// 4) VISION/ANGLE
+	if (suffix == _T("VISION"))
+	{
+		if (IniKeyExists(moveIniPath, bestSection, _T("00"))) { outIniKey = _T("00"); return true; }
+		if (IniKeyExists(moveIniPath, bestSection, _T("01"))) { outIniKey = _T("01"); return true; }
+	}
+	if (suffix == _T("ANGLE"))
+	{
+		if (IniKeyExists(moveIniPath, bestSection, _T("02"))) { outIniKey = _T("02"); return true; }
+		if (IniKeyExists(moveIniPath, bestSection, _T("03"))) { outIniKey = _T("03"); return true; }
+	}
+
+	// 5) UNLOAD_PICKER_Y/Z : INSPECTION_STAGE_n / GOOD_STAGE_n / NG_STAGE_n
+	//    (suffix에 "_1~_4" 파싱해서 계산)
+	{
+		// INSPECTION_STAGE_#
+		const CString p1 = _T("INSPECTION_STAGE_");
+		const CString p2 = _T("GOOD_STAGE_");
+		const CString p3 = _T("NG_STAGE_");
+
+		if (suffix.Left(p1.GetLength()) == p1)
+		{
+			int n = _ttoi(suffix.Mid(p1.GetLength()));
+			if (n >= 1 && n <= 4)
+			{
+				// X 계열이면 05~08, Y/Z면 01~04
+				CString key;
+				if (canonSection.Left(14) == _T("UNLOAD_PICKER_X"))
+					key.Format(_T("%02d"), 4 + n);   // 05~08
+				else
+					key.Format(_T("%02d"), n);       // 01~04
+
+				if (IniKeyExists(moveIniPath, bestSection, key)) { outIniKey = key; return true; }
+			}
+		}
+		if (suffix.Left(p2.GetLength()) == p2)
+		{
+			int n = _ttoi(suffix.Mid(p2.GetLength()));
+			if (n >= 1 && n <= 2)
+			{
+				CString key;
+				key.Format(_T("%02d"), 4 + n); // 05~06
+				if (IniKeyExists(moveIniPath, bestSection, key)) { outIniKey = key; return true; }
+			}
+		}
+		if (suffix.Left(p3.GetLength()) == p3)
+		{
+			int n = _ttoi(suffix.Mid(p3.GetLength()));
+			if (n >= 1 && n <= 2)
+			{
+				CString key;
+				key.Format(_T("%02d"), 6 + n); // 07~08
+				if (IniKeyExists(moveIniPath, bestSection, key)) { outIniKey = key; return true; }
+			}
+		}
+	}
+
+	// 6) UNLOAD_PICKER_P1/P2 : GOOD_STAGE / INSPECTION_STAGE / NG_STAGE
+	if (suffix == _T("GOOD_STAGE"))
+	{
+		if (IniKeyExists(moveIniPath, bestSection, _T("01"))) { outIniKey = _T("01"); return true; }
+	}
+	if (suffix == _T("INSPECTION_STAGE"))
+	{
+		if (IniKeyExists(moveIniPath, bestSection, _T("02"))) { outIniKey = _T("02"); return true; }
+	}
+	if (suffix == _T("NG_STAGE"))
+	{
+		if (IniKeyExists(moveIniPath, bestSection, _T("03"))) { outIniKey = _T("03"); return true; }
+	}
+
+	return false;
+}
+bool CCommon::TryFindMoveValue(const CString& moveIniPath, const CString& dataId, CString& outValue)
+{
+	if (dataId.Left(3) != _T("MD_"))
+		return false;
+
+	CString rest = dataId.Mid(3); // MD_ 제거
+
+	// 1) MoveData.ini 섹션 목록
+	TCHAR sectionBuf[65535] = {0};
+	DWORD n = ::GetPrivateProfileSectionNames(sectionBuf, 65535, moveIniPath);
+	if (n == 0)
+		return false;
+
+	// 2) DataID와 가장 잘 맞는 섹션 선택
+	CString bestSection;
+	int bestLen = -1;
+
+	const TCHAR* p = sectionBuf;
+	while (*p)
+	{
+		CString sec(p);
+		CString canon = StripNumberPrefix(sec);
+
+		if (rest.Find(canon + _T("_")) == 0 || rest == canon)
+		{
+			if (canon.GetLength() > bestLen)
+			{
+				bestLen = canon.GetLength();
+				bestSection = sec;
+			}
+		}
+		p += sec.GetLength() + 1;
+	}
+
+	if (bestSection.IsEmpty())
+		return false;
+
+	// 3) canonSection + suffix 계산
+	CString canonBest = StripNumberPrefix(bestSection);
+	CString suffix;
+
+	if (rest.GetLength() > canonBest.GetLength() + 1)
+		suffix = rest.Mid(canonBest.GetLength() + 1);
+	else
+		suffix = _T("");
+
+	// 4) iniKey 결정
+	CString iniKey;
+
+	// (1) 우선: 완전 고정 룰
+	if (!ResolveMoveKeyBySectionAndSuffix(canonBest, suffix, iniKey))
+	{
+		// (2) fallback: 실제 ini에 존재하는 key로 판단
+		if (!ResolveMoveKeyFallbackByExistingKey(
+			moveIniPath,
+			bestSection,   // 실제 섹션명
+			canonBest,     // 숫자 제거 섹션명
+			suffix,
+			iniKey))
+		{
+			return false;
+		}
+	}
+
+	// 5) 값 읽기
+	CString value = ReadIniString(moveIniPath, bestSection, iniKey);
+	if (value.IsEmpty())
+		return false;
+
+	outValue = value;
+	return true;
+}
+
+
+
+bool CCommon::BuildDataIdValueVector(const CString& equipIniPath, const CString& moveIniPath,vectorPair& outVec)
+{
+	outVec.clear();
+	outVec.reserve(nHandlerDataIdCount);
+
+	for (int i = 0; i < nHandlerDataIdCount; ++i)
+	{
+		CString dataId = strHandlerDataIds[i];
+		CString value;
+
+		bool ok = false;
+		if (dataId.Left(3) == _T("EQ_"))
+			ok = TryFindEquipValue(equipIniPath, dataId, value);
+		else if (dataId.Left(3) == _T("MD_"))
+			ok = TryFindMoveValue(moveIniPath, dataId, value);
+
+		// 못 찾는 경우 빈값으로 넣거나, 로그 남기기 선택
+		outVec.push_back(std::make_pair(dataId, ok ? value : _T("")));
+	}
+
+	return true;
+}

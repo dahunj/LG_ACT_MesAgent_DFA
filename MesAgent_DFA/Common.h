@@ -31,11 +31,29 @@ public:
 	int	 Find_Data(CString sBarCode);
 	void Clean_Data();
 
-
+	//Vision RMS 
 	BOOL LoadIniToVector(const CString& filePath, std::vector<CIniItem>& outVec, int &outCnt);
 	BOOL SaveVectorToIni(const CString& filePath, const std::vector<CIniItem>& vec);
 
 	void Load_RMSData();
+
+	//Handler RMS
+	CString ReadIniString(const CString& iniPath, const CString& section, const CString& key);
+	bool TryFindEquipValue(const CString& equipIniPath, const CString& dataId, CString& outValue);
+	
+	
+	std::map<CString, CString>& GetMoveKeyRuleMap();
+	bool ResolveMoveKeyBySectionAndSuffix(const CString& canonSection,const CString& suffix,CString& outIniKey);
+	
+	CString StripNumberPrefix(const CString& section);
+	bool ResolveMoveKeyFallbackByExistingKey(const CString& moveIniPath,
+		const CString& bestSection,    // 실제 섹션명 (숫자 포함 가능)
+		const CString& canonSection,   // StripNumberPrefix(bestSection)
+		const CString& suffix,
+		CString& outIniKey);
+	bool TryFindMoveValue(const CString& moveIniPath, const CString& dataId, CString& outValue);
+	bool IniKeyExists(const CString& iniPath, const CString& section, const CString& key);
+	bool BuildDataIdValueVector(const CString& equipIniPath, const CString& moveIniPath,vectorPair& outVec);
 
 };
 

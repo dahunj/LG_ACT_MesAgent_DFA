@@ -353,6 +353,7 @@ void CHandler::Get_RMSCheck()
 	else
 	{
 		g_objCommon.Load_RMSData();
+		g_objCommon.BuildDataIdValueVector("D:\\RMS\\EquipData.ini", "D:\\RMS\\MoveData.ini", vecHandlerData);
 		//do nothing
 	}
 }

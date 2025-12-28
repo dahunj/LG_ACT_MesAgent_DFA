@@ -677,6 +677,15 @@ void CHost::Set_S7F26()
 	strSend += "    <PRODID VALUE=\"" + gMes.sHostModel + "\" />" + CRLF;
 	strSend += "    <PCLIST COUNT=\"" + strTotal +"\">" + CRLF;
 
+
+	for (int i = 0; i < nHandlerDataIdCount; i++) 
+	{
+		strSend += "    <LIST>" + CRLF;
+		strSend += "      <CCODE VALUE=\"" + vecHandlerData[i].first + "\" />" + CRLF;
+		strSend += "      <PPARM VALUE=\"" + vecHandlerData[i].second + "\" />" + CRLF;
+		strSend += "    </LIST>" + CRLF;
+	}
+	
 	for(int j = 0; j < 5; j++)
 	{
 		for (int i = 0; i < glistFAIInfo[j].size(); i++) 
@@ -692,23 +701,23 @@ void CHost::Set_S7F26()
 	{
 		for (int i = 0; i < glistLightInfo[j].size(); i++) 
 		{
-			strSend += "    <LIST>" + CRLF;
-			strSend += "      <CCODE VALUE=\"" + glistLightInfo[j][i].key + "\" />" + CRLF;
-			strSend += "      <PPARM VALUE=\"" + glistLightInfo[j][i].value + "\" />" + CRLF;
-			strSend += "    </LIST>" + CRLF;
+		strSend += "    <LIST>" + CRLF;
+		strSend += "      <CCODE VALUE=\"" + glistLightInfo[j][i].key + "\" />" + CRLF;
+		strSend += "      <PPARM VALUE=\"" + glistLightInfo[j][i].value + "\" />" + CRLF;
+		strSend += "    </LIST>" + CRLF;
 		}
 	}
 
-	for(int j = 0; j < 5; j++)
-	{
-		for (int i = 0; i < glistParamInfo[j].size(); i++) 
-		{
-			strSend += "    <LIST>" + CRLF;
-			strSend += "      <CCODE VALUE=\"" + glistParamInfo[j][i].key + "\" />" + CRLF;
-			strSend += "      <PPARM VALUE=\"" + glistParamInfo[j][i].value + "\" />" + CRLF;
-			strSend += "    </LIST>" + CRLF;
-		}
-	}	
+	//for(int j = 0; j < 5; j++)
+	//{
+	//	for (int i = 0; i < glistParamInfo[j].size(); i++) 
+	//	{
+	//		strSend += "    <LIST>" + CRLF;
+	//		strSend += "      <CCODE VALUE=\"" + glistParamInfo[j][i].key + "\" />" + CRLF;
+	//		strSend += "      <PPARM VALUE=\"" + glistParamInfo[j][i].value + "\" />" + CRLF;
+	//		strSend += "    </LIST>" + CRLF;
+	//	}
+	//}	
 
 	strSend += "    </PCLIST>" + CRLF;
 	strSend += "  </ITEM>" + CRLF;
