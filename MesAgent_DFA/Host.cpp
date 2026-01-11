@@ -696,8 +696,8 @@ void CHost::Set_S7F26()
 			strSend += "    </LIST>" + CRLF;
 		}
 	}
-
-	for(int j = 0; j < 5; j++)
+	//payload capacity 한계로 인해 너무 커서 패킷이 유실 될 수 있다. 
+	/*for(int j = 0; j < 5; j++)
 	{
 		for (int i = 0; i < glistLightInfo[j].size(); i++) 
 		{
@@ -706,7 +706,7 @@ void CHost::Set_S7F26()
 		strSend += "      <PPARM VALUE=\"" + glistLightInfo[j][i].value + "\" />" + CRLF;
 		strSend += "    </LIST>" + CRLF;
 		}
-	}
+	}*/
 
 	//for(int j = 0; j < 5; j++)
 	//{
