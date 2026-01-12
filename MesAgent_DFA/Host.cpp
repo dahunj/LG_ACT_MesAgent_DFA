@@ -369,25 +369,26 @@ BOOL CHost::Extract_Xml(CString sXmlData)
 				CXmlNodes nodeA = nodeM[i]->GetChildren();
 				int nCount = nodeA.GetCount();
 
-				for (int j = 0; j < 12; j++) {
+				for (int j = 0; j < 13; j++) {
 					CString strName = nodeA[j]->GetChild("NAME")->GetAttribute("VALUE");
 					CString strData = nodeA[j]->GetChild("VAL")->GetAttribute("VALUE");
 					strData.Replace(",", ".");
 
-					k = 0;
-					if (strName	== "LOTID")			k = 0;
-					if (strName	== "MODULEID")		k = 1;
-					if (strName	== "SITE")			k = 2;
-					if (strName	== "EQPID")			k = 3;
-					if (strName	== "EQPNAME")		k = 4;
-					if (strName	== "TOOL_CAVITY")	k = 5;
-					if (strName	== "PARA")			k = 6;
-					if (strName	== "DATE")			k = 7;
-					if (strName	== "ROS_JUDGE")		k = 8;
-					if (strName	== "DFA_LOTID")		k = 9;
-					if (strName	== "POCKETNO")		k = 10;
+					k = 99;
+					if (strName	== "LOTID")				k = 0;
+					if (strName	== "MODULEID")			k = 1;
+					if (strName	== "SITE")				k = 2;
+					if (strName	== "EQPID")				k = 3;
+					if (strName	== "EQPNAME")			k = 4;
+					if (strName	== "TOOL_CAVITY")		k = 5;
+					if (strName	== "PARA")				k = 6;
+					if (strName	== "DATE")				k = 7;
+					if (strName	== "ROS_JUDGE")			k = 8;
+					if (strName	== "DFA_LOTID")			k = 9;
+					if (strName	== "POCKETNO")			k = 10;
 					if (strName	== "HAIM_FAILURE_CODE")	k = 11;	//DFA父 贸府
-					gMes.sModuleData[i][k] = strData;
+					if (strName	== "COSMETIC_JUDGE")	k = 12;	//DFA父 贸府
+					if (k <= 12) gMes.sModuleData[i][k] = strData;
 
 				}
 			}
@@ -1930,7 +1931,7 @@ void CHost::Clear_ModuleData()
 {
 	gMes.nModuleCount = 0;
 	for(int i=0; i<40; i++) {
-		for(int j=0; j<12; j++) {
+		for(int j=0; j<13; j++) {
 			gMes.sModuleData[i][j] = "";
 		}
 	}
