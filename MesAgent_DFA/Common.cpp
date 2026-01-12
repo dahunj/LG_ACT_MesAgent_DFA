@@ -517,17 +517,17 @@ std::map<CString, CString>& CCommon::GetMoveKeyRuleMap()
 	s_map[_T("UNLOAD_PICKER_P2|NG_STAGE")]         = _T("03");
 
 	// ===== TOP1_* : VISION, ANGLE =====
-	s_map[_T("TOP1_LIGHT_Z|VISION")] = _T("00");
+	s_map[_T("TOP1_LIGHT_Z|VISION")] = _T("01");
 	s_map[_T("TOP1_LIGHT_Z|ANGLE")]  = _T("02");
 
-	s_map[_T("TOP1_ANGLE_Y|VISION")] = _T("00");
+	s_map[_T("TOP1_ANGLE_Y|VISION")] = _T("01");
 	s_map[_T("TOP1_ANGLE_Y|ANGLE")]  = _T("02");
 
-	s_map[_T("TOP1_VISION_Z|VISION")] = _T("00");
+	s_map[_T("TOP1_VISION_Z|VISION")] = _T("01");
 	s_map[_T("TOP1_VISION_Z|ANGLE")]  = _T("02");
 
 	// ===== TOP2_VISION_Z : VISION only =====
-	s_map[_T("TOP2_VISION_Z|VISION")] = _T("00");
+	s_map[_T("TOP2_VISION_Z|VISION")] = _T("01");
 
 	return s_map;
 }
