@@ -484,7 +484,7 @@ void CHandler::Set_ModuleData()
 
 	sData = "";
 	for(int i=0; i<gMes.nModuleCount; i++) {
-		for(int j=0; j<12; j++) {
+		for(int j=0; j<13; j++) {
 			sData = sData + "," + gMes.sModuleData[i][j];
 		}
 	}
