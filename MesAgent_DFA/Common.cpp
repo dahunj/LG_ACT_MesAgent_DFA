@@ -261,7 +261,7 @@ void CCommon::Load_RMSData()
 		}
 	}
 
-	for(int i = 0; i < 5; i++)
+	/*for(int i = 0; i < 5; i++)
 	{
 		strTemp.Format("%d", i+1);
 		if(g_objCommon.LoadIniToVector("D:\\Vision Data\\Recipe\\InspectLightInfo_PC"+strTemp+".ini", glistLightInfo[i], nLightReadCnt[i]))
@@ -303,7 +303,7 @@ void CCommon::Load_RMSData()
 			}			
 		}
 	}
-
+*/
 
 	int nCheck = 0;
 	gData.bRMSLoad_ALL = FALSE;

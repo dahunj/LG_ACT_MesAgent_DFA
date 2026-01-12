@@ -97,39 +97,42 @@ BOOL CMesAgentDlg::OnInitDialog()
 		gData.nTotalCnt += gData.nFAICnt[i]; 
 	}
 
-	for(int i = 0; i < 5; i++)
-	{
-		sTemp.Format("%d", i+1);
-		CIniFileCS INI("D:\\Vision Data\\Recipe\\InspectLightInfo_PC"+sTemp+".ini");
-		if (!INI.Check_File()) 
-		{ 
-			AfxMessageBox("InspectLightInfo_PC"+sTemp+".ini File Not Found!!!");
-			return FALSE; 
-		}
-
-		gData.nLightCnt[i] = INI.Get_Integer("LIGHT_COUNT","AVI_LIGHT_COUNT_PC"+sTemp, 0);
-		gData.nTotalCnt += gData.nLightCnt[i]; 
-	}
-
-
 	
-	for(int i = 0; i < 5; i++)
-	{
-		sTemp.Format("%d", i+1);
-		CIniFileCS INI("D:\\Vision Data\\Recipe\\InspectParam_PC"+sTemp+".ini");
-		if (!INI.Check_File()) 
-		{ 
-			AfxMessageBox("InspectParam_PC"+sTemp+".ini File Not Found!!!");
-			return FALSE; 
-		}
 
-		gData.nParamCnt[i] = INI.Get_Integer("AVI_COUNT","AVI_INSPECT_COUNT_PC"+sTemp, 0);
-		gData.nTotalCnt += gData.nParamCnt[i]; 
-	}
+	//for(int i = 0; i < 5; i++)
+	//{
+	//	sTemp.Format("%d", i+1);
+	//	CIniFileCS INI("D:\\Vision Data\\Recipe\\InspectLightInfo_PC"+sTemp+".ini");
+	//	if (!INI.Check_File()) 
+	//	{ 
+	//		AfxMessageBox("InspectLightInfo_PC"+sTemp+".ini File Not Found!!!");
+	//		return FALSE; 
+	//	}
+
+	//	gData.nLightCnt[i] = INI.Get_Integer("LIGHT_COUNT","AVI_LIGHT_COUNT_PC"+sTemp, 0);
+	//	gData.nTotalCnt += gData.nLightCnt[i]; 
+	//}
+
+
+	//
+	//for(int i = 0; i < 5; i++)
+	//{
+	//	sTemp.Format("%d", i+1);
+	//	CIniFileCS INI("D:\\Vision Data\\Recipe\\InspectParam_PC"+sTemp+".ini");
+	//	if (!INI.Check_File()) 
+	//	{ 
+	//		AfxMessageBox("InspectParam_PC"+sTemp+".ini File Not Found!!!");
+	//		return FALSE; 
+	//	}
+
+	//	gData.nParamCnt[i] = INI.Get_Integer("AVI_COUNT","AVI_INSPECT_COUNT_PC"+sTemp, 0);
+	//	gData.nTotalCnt += gData.nParamCnt[i]; 
+	//}
 	
 	m_PgrCtrlRMS.SetRange(0,gData.nTotalCnt);
 
 	g_objCommon.Load_RMSData();
+	g_objCommon.BuildDataIdValueVector("D:\\RMS\\EquipData.ini", "D:\\RMS\\MoveData.ini", vecHandlerData);
 
 
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
@@ -488,5 +491,6 @@ void CMesAgentDlg::Test_Data()
 void CMesAgentDlg::OnBnClickedBtnRmsLoad()
 {
 	g_objCommon.Load_RMSData();
+	g_objCommon.BuildDataIdValueVector("D:\\RMS\\EquipData.ini", "D:\\RMS\\MoveData.ini", vecHandlerData);
 	
 }

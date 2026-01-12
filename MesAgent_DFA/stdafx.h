@@ -199,7 +199,7 @@ extern std::vector<CIniItem> glistParamInfo[5];
 
 
 
-#define FILE_COUNT 15
+#define FILE_COUNT 5
 
 // RMS handler 
 
