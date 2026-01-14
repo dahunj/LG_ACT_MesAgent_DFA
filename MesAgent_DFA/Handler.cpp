@@ -346,6 +346,7 @@ void CHandler::Get_RecipeReport(CString sIdxNo, CString sVersion, CString sRcvDa
 
 void CHandler::Get_RMSCheck()
 {
+	gData.bRMSLoad_ALL = FALSE;
 	if(gData.bRMSLoad_ALL)
 	{
 		Set_RMSAlreadyDone();
@@ -528,7 +529,7 @@ void CHandler::Send_Command(CString sSend)
 
 	strSendSocket.Format("@%s\n", sSend);
 
-	char chSend[36864] = { 0 };	// Max 1000
+	char chSend[40000];//char chSend[36864] = { 0 };	// Max 1000
 	int nLength = strSendSocket.GetLength();
 	memcpy(chSend, (LPSTR)(LPCSTR)strSendSocket, nLength);
 

@@ -663,7 +663,7 @@ void CHost::Set_S7F26()
 	CString strSend = "<?xml version=\"1.0\" encoding=\"utf-16\"?>" + CRLF;
 
 	CString strTotal;
-	strTotal.Format("%d", gData.nTotalCnt);
+	strTotal.Format("%d", gData.nTotalCnt+nHandlerDataIdCount);
 
 	strSend += "<EIF VERSION=\"2.0\" ID=\"S7F26\" NAME=\"Formatted Process Program Data\">" + CRLF;
 	strSend += "  <ELEMENT>" + CRLF;
@@ -689,7 +689,9 @@ void CHost::Set_S7F26()
 	
 	for(int j = 0; j < 5; j++)
 	{
-		for (int i = 0; i < glistFAIInfo[j].size(); i++) 
+		
+		for (int i = 0; i < gData.nFAICnt[j]; i++) 
+		//for (int i = 0; i < glistFAIInfo[j].size(); i++) 
 		{
 			strSend += "    <LIST>" + CRLF;
 			strSend += "      <CCODE VALUE=\"" + glistFAIInfo[j][i].key + "\" />" + CRLF;

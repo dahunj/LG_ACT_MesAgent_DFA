@@ -166,6 +166,14 @@ BOOL CCommon::LoadIniToVector(const CString& filePath, std::vector<CIniItem>& ou
 
 		CIniItem item;
 		item.section = currentSection;
+		if(value == "TRUE")
+		{
+				value = "T";
+		}
+		if(value == "FALSE")
+		{
+				value = "F";
+		}
 		item.key     = key;
 		item.value   = value;
 
@@ -317,8 +325,9 @@ void CCommon::Load_RMSData()
 	if(nCheck == FILE_COUNT)
 	{
 		gData.bRMSLoad_ALL = TRUE;
-		AfxMessageBox("RMS Data Load Success");
 		g_objHandler.Set_RMSLoadDone();
+		//AfxMessageBox("RMS Data Load Success");
+		
 	}
 }
 
@@ -361,6 +370,16 @@ bool CCommon::TryFindEquipValue(const CString& equipIniPath, const CString& data
 		CString v = ReadIniString(equipIniPath, sections[i], key);
 		if (!v.IsEmpty())
 		{
+			if(v=="TRUE")
+			{
+				v="T";
+
+			}
+			if(v=="FALSE")
+			{
+				v="F";
+
+			}
 			outValue = v;
 			return true;
 		}
@@ -756,6 +775,16 @@ bool CCommon::TryFindMoveValue(const CString& moveIniPath, const CString& dataId
 	if (value.IsEmpty())
 		return false;
 
+	if(value=="TRUE")
+			{
+				value="T";
+
+			}
+			if(value=="FALSE")
+			{
+				value="F";
+
+			}
 	outValue = value;
 	return true;
 }
