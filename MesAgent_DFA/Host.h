@@ -120,8 +120,8 @@ public:
 	void Set_S2F50_CarrierConfirm();	// TRAY_ID_CONFIRM Ack
 	void Set_S2F50_ModuleData();		// LOT_MODULE_DATA_DETAIL Ack
 	void Set_S2F50_PPSelect();			// PP_SELECT Ack
-	void Set_S2F50_PPUnloadConfirm();	// PP_UPLOAD_CONFIRM Ack
-	void Set_S2F50_PPUnloadFail();		// PP_UPLOAD_FAIL Ack
+	void Set_S2F50_PPUploadConfirm();	// PP_UPLOAD_CONFIRM Ack
+	void Set_S2F50_PPUploadFail();		// PP_UPLOAD_FAIL Ack
 
 	void Test_Send();
 	void Test_WriteLog();

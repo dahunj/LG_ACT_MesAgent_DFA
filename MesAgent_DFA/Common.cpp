@@ -37,6 +37,7 @@ BOOL CCommon::Read_Config()
 	gData.bHostLog = INI.Get_Bool("DATA", "HOST_LOG", FALSE);
 	gData.sErrFile = INI.Get_String("DATA", "ERROR_FILE", "");
 	gData.bJahwa = INI.Get_Bool("DATA", "JAHWA", FALSE);
+	gData.sRMSPath = INI.Get_String("DATA","RMS_PATH","");
 
 	return TRUE;
 }

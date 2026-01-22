@@ -1598,7 +1598,7 @@ void CHost::Set_S2F50_PPSelect()
 	Send_Command(strSend, TRUE, "S2F50", "PP_SELECT");
 }
 
-void CHost::Set_S2F50_PPUnloadConfirm()
+void CHost::Set_S2F50_PPUploadConfirm()
 {
 	CString strSend = "<?xml version=\"1.0\" encoding=\"utf-16\"?>" + CRLF;
 
@@ -1617,7 +1617,7 @@ void CHost::Set_S2F50_PPUnloadConfirm()
 	Send_Command(strSend, TRUE, "S2F50", "PP_UPLOAD_CONFIRM");
 }
 
-void CHost::Set_S2F50_PPUnloadFail()
+void CHost::Set_S2F50_PPUploadFail()
 {
 	CString strSend = "<?xml version=\"1.0\" encoding=\"utf-16\"?>" + CRLF;
 

@@ -70,7 +70,7 @@ public:
 	void Set_CarrierCancel();
 	void Set_ModuleData();
 	void Set_PPSelect();
-	void Set_PPUnloadFail();
+	void Set_PPUploadFail();
 
 	void Set_RecipeListRequest(BOOL bList);
 	void Set_HostMsg(CString sMsg);

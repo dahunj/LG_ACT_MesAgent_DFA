@@ -81,6 +81,7 @@ typedef struct {
 	CString		sErrFile;
 	BOOL		bJahwa;
 	CString		sOperId;
+	CString		sRMSPath;
 
 	CString		sCurrentRecipe;
 	int			nRcpCount;

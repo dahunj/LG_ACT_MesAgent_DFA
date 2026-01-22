@@ -59,9 +59,5 @@ public:
 	void Set_HandlerMsg(CString sMsg);
 	void Set_HostMsg(CString sMsg);
 	void Set_VisionConnect(BOOL bConnected);
-
-	
-
-	
 	afx_msg void OnBnClickedBtnRmsLoad();
 };
