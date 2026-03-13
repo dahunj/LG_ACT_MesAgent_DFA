@@ -354,7 +354,7 @@ void CHandler::Get_RMSCheck()
 	else
 	{
 		g_objCommon.Load_RMSData();
-		g_objCommon.BuildDataIdValueVector(gData.sRMSPath +"\\EquipData.ini", gData.sRMSPath + "\\MoveData.ini", vecHandlerData);
+		g_objCommon.Get_IniValues(gData.sRMSPath +"\\EquipData.ini", gData.sRMSPath + "\\MoveData.ini", vecHandlerData);
 		//do nothing
 	}
 }
@@ -500,7 +500,7 @@ void CHandler::Set_PPSelect()
 	Send_Command(strSend);
 }
 
-void CHandler::Set_PPUnloadFail()
+void CHandler::Set_PPUploadFail()
 {
 	CString strSend;
 	strSend.Format("RECIPE,FAIL,%s,%s,%s,%s", gMes.sHostLotId, gMes.sHostRecipe, gMes.sCancelCode, gMes.sCancelText);

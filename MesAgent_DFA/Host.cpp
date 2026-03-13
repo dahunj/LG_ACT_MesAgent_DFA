@@ -563,14 +563,14 @@ void CHost::Get_S2F49_PPSelect()
 
 void CHost::Get_S2F49_PPUploadConfirm()
 {
-	Set_S2F50_PPUnloadConfirm();
+	Set_S2F50_PPUploadConfirm();
 	Set_S6F11_PPUploadReport(gMes.sHostLotId);
 }
 
 void CHost::Get_S2F49_PPUploadFail()
 {
-	Set_S2F50_PPUnloadFail();
-	g_objHandler.Set_PPUnloadFail();
+	Set_S2F50_PPUploadFail();
+	g_objHandler.Set_PPUploadFail();
 }
 
 ///////////////////////////////////////////////////////////////////////////////

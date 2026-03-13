@@ -134,7 +134,7 @@ BOOL CMesAgentDlg::OnInitDialog()
 	g_objCommon.Read_Config();
 
 	g_objCommon.Load_RMSData();
-	g_objCommon.BuildDataIdValueVector(gData.sRMSPath + "\\EquipData.ini", gData.sRMSPath + "\\MoveData.ini", vecHandlerData);
+	g_objCommon.Get_IniValues(gData.sRMSPath + "\\EquipData.ini", gData.sRMSPath + "\\MoveData.ini", vecHandlerData);
 
 
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
@@ -235,7 +235,7 @@ void CMesAgentDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 	gData.nPreEquipState = gData.nCurEquipState = 0; 
 
 	g_objCommon.Load_RMSData();
-	g_objCommon.BuildDataIdValueVector(gData.sRMSPath +"\\EquipData.ini", gData.sRMSPath + "\\MoveData.ini", vecHandlerData);
+	g_objCommon.Get_IniValues(gData.sRMSPath +"\\EquipData.ini", gData.sRMSPath + "\\MoveData.ini", vecHandlerData);
 
 
 	SetTimer(0, 1000, NULL);
@@ -472,7 +472,7 @@ void CMesAgentDlg::Set_HostMsg(CString sMsg)
 void CMesAgentDlg::OnBnClickedBtnTest()
 {
 
-	g_objCommon.BuildDataIdValueVector(gData.sRMSPath +"\\EquipData.ini", gData.sRMSPath + "\\MoveData.ini", vecHandlerData);
+	g_objCommon.Get_IniValues(gData.sRMSPath +"\\EquipData.ini", gData.sRMSPath + "\\MoveData.ini", vecHandlerData);
 	//gData.bRMSLoad_ALL = FALSE;
 	//g_objCommon.Load_RMSData();
 	//g_objHost.Test_Set();
@@ -497,6 +497,6 @@ void CMesAgentDlg::Test_Data()
 void CMesAgentDlg::OnBnClickedBtnRmsLoad()
 {
 	g_objCommon.Load_RMSData();
-	g_objCommon.BuildDataIdValueVector(gData.sRMSPath +"\\EquipData.ini", gData.sRMSPath + "\\MoveData.ini", vecHandlerData);
+	g_objCommon.Get_IniValues(gData.sRMSPath +"\\EquipData.ini", gData.sRMSPath + "\\MoveData.ini", vecHandlerData);
 	
 }

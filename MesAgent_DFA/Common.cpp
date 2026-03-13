@@ -335,7 +335,7 @@ void CCommon::Load_RMSData()
 
 
 
-CString CCommon::ReadIniString(const CString& iniPath, const CString& section, const CString& key)
+CString CCommon::Get_IniValues(const CString& iniPath, const CString& section, const CString& key)
 {
 	TCHAR buf[512] = {0};
 	::GetPrivateProfileString(section, key, _T(""), buf, 512, iniPath);
@@ -343,7 +343,7 @@ CString CCommon::ReadIniString(const CString& iniPath, const CString& section, c
 }
 
 
-bool CCommon::TryFindEquipValue(const CString& equipIniPath, const CString& dataId, CString& outValue)
+bool CCommon::Check_EquipData(const CString& equipIniPath, const CString& dataId, CString& outValue)
 {
 	if (dataId.Left(3) != _T("EQ_"))
 		return false;
@@ -368,7 +368,7 @@ bool CCommon::TryFindEquipValue(const CString& equipIniPath, const CString& data
 
 	for (int i = 0; i < (int)(sizeof(sections)/sizeof(sections[0])); ++i)
 	{
-		CString v = ReadIniString(equipIniPath, sections[i], key);
+		CString v = Get_IniValues(equipIniPath, sections[i], key);
 		if (!v.IsEmpty())
 		{
 			if(v=="TRUE")
@@ -388,7 +388,7 @@ bool CCommon::TryFindEquipValue(const CString& equipIniPath, const CString& data
 	return false;
 }
 
-bool CCommon::IniKeyExists(const CString& iniPath, const CString& section, const CString& key)
+bool CCommon::Check_IniKeys(const CString& iniPath, const CString& section, const CString& key)
 {
 	TCHAR buf[2] = {0};
 	::GetPrivateProfileString(section, key, _T(""), buf, 2, iniPath);
@@ -396,7 +396,7 @@ bool CCommon::IniKeyExists(const CString& iniPath, const CString& section, const
 }
 
 
-CString CCommon::StripNumberPrefix(const CString& section)
+CString CCommon::RemoveMoveDataPrefix(const CString& section)
 {
 	// "11_LOAD_STAGE_Y1" -> "LOAD_STAGE_Y1"
 	int pos = section.Find(_T('_'));
@@ -411,7 +411,7 @@ CString CCommon::StripNumberPrefix(const CString& section)
 	return section.Mid(pos+1);
 }
 
-std::map<CString, CString>& CCommon::GetMoveKeyRuleMap()
+std::map<CString, CString>& CCommon::Get_MoveData_FromMap()
 {
 	static std::map<CString, CString> s_map;
 	if (!s_map.empty())
@@ -554,12 +554,12 @@ std::map<CString, CString>& CCommon::GetMoveKeyRuleMap()
 
 
 // canonSection + suffix로 iniKey 반환 (겹침 해결)
-bool CCommon::ResolveMoveKeyBySectionAndSuffix(const CString& canonSection,const CString& suffix,CString& outIniKey)
+bool CCommon::Sort_MoveData_Keys(const CString& canonSection,const CString& suffix,CString& outIniKey)
 {
 	CString k;
 	k.Format(_T("%s|%s"), canonSection.GetString(), suffix.GetString());
 
-	const auto& m = GetMoveKeyRuleMap();
+	const auto& m = Get_MoveData_FromMap();
 	auto it = m.find(k);
 	if (it == m.end())
 		return false;
@@ -570,10 +570,10 @@ bool CCommon::ResolveMoveKeyBySectionAndSuffix(const CString& canonSection,const
 
 
 // 대표적인 suffix -> ini key 규칙(필요시 확장)
-bool CCommon::ResolveMoveKeyFallbackByExistingKey(
+bool CCommon::Sort_MoveData(
 	const CString& moveIniPath,
 	const CString& bestSection,    // 실제 섹션명 (숫자 포함 가능)
-	const CString& canonSection,   // StripNumberPrefix(bestSection)
+	const CString& canonSection,   // RemoveMoveDataPrefix(bestSection)
 	const CString& suffix,
 	CString& outIniKey
 	)
@@ -581,11 +581,11 @@ bool CCommon::ResolveMoveKeyFallbackByExistingKey(
 	{
 		CString k;
 		k.Format(_T("%s|%s"), canonSection.GetString(), suffix.GetString());
-		const auto& m = GetMoveKeyRuleMap();
+		const auto& m = Get_MoveData_FromMap();
 		auto it = m.find(k);
 		if (it != m.end())
 		{
-			if (IniKeyExists(moveIniPath, bestSection, it->second))
+			if (Check_IniKeys(moveIniPath, bestSection, it->second))
 			{
 				outIniKey = it->second;
 				return true;
@@ -596,54 +596,54 @@ bool CCommon::ResolveMoveKeyFallbackByExistingKey(
 	// 1) LOAD_PICKER_* 공통 (LOAD_STAGE_1/2/BOTTOM/ALIGN)
 	if (suffix == _T("LOAD_STAGE_1"))
 	{
-		if (IniKeyExists(moveIniPath, bestSection, _T("01"))) { outIniKey = _T("01"); return true; }
+		if (Check_IniKeys(moveIniPath, bestSection, _T("01"))) { outIniKey = _T("01"); return true; }
 	}
 	if (suffix == _T("LOAD_STAGE_2"))
 	{
-		if (IniKeyExists(moveIniPath, bestSection, _T("02"))) { outIniKey = _T("02"); return true; }
+		if (Check_IniKeys(moveIniPath, bestSection, _T("02"))) { outIniKey = _T("02"); return true; }
 	}
 	if (suffix == _T("BOTTOM"))
 	{
-		if (IniKeyExists(moveIniPath, bestSection, _T("03"))) { outIniKey = _T("03"); return true; }
+		if (Check_IniKeys(moveIniPath, bestSection, _T("03"))) { outIniKey = _T("03"); return true; }
 	}
 	if (suffix == _T("ALIGN"))
 	{
 		// stage Y들은 ALIGN이 06인 케이스가 있으므로 06 우선, 없으면 04
-		if (IniKeyExists(moveIniPath, bestSection, _T("06"))) { outIniKey = _T("06"); return true; }
-		if (IniKeyExists(moveIniPath, bestSection, _T("04"))) { outIniKey = _T("04"); return true; }
+		if (Check_IniKeys(moveIniPath, bestSection, _T("06"))) { outIniKey = _T("06"); return true; }
+		if (Check_IniKeys(moveIniPath, bestSection, _T("04"))) { outIniKey = _T("04"); return true; }
 	}
 
 	// 2) LOAD/UNLOAD
 	if (suffix == _T("LOAD"))
 	{
-		if (IniKeyExists(moveIniPath, bestSection, _T("00"))) { outIniKey = _T("00"); return true; }
+		if (Check_IniKeys(moveIniPath, bestSection, _T("00"))) { outIniKey = _T("00"); return true; }
 	}
 	if (suffix == _T("UNLOAD"))
 	{
-		if (IniKeyExists(moveIniPath, bestSection, _T("02"))) { outIniKey = _T("02"); return true; }
-		if (IniKeyExists(moveIniPath, bestSection, _T("03"))) { outIniKey = _T("03"); return true; }
+		if (Check_IniKeys(moveIniPath, bestSection, _T("02"))) { outIniKey = _T("02"); return true; }
+		if (Check_IniKeys(moveIniPath, bestSection, _T("03"))) { outIniKey = _T("03"); return true; }
 	}
 
 	// 3) INSPECT_STAGE_X* : TOP1/TOP2/UNLOAD
 	if (suffix == _T("TOP1"))
 	{
-		if (IniKeyExists(moveIniPath, bestSection, _T("01"))) { outIniKey = _T("01"); return true; }
+		if (Check_IniKeys(moveIniPath, bestSection, _T("01"))) { outIniKey = _T("01"); return true; }
 	}
 	if (suffix == _T("TOP2"))
 	{
-		if (IniKeyExists(moveIniPath, bestSection, _T("02"))) { outIniKey = _T("02"); return true; }
+		if (Check_IniKeys(moveIniPath, bestSection, _T("02"))) { outIniKey = _T("02"); return true; }
 	}
 
 	// 4) VISION/ANGLE
 	if (suffix == _T("VISION"))
 	{
-		if (IniKeyExists(moveIniPath, bestSection, _T("00"))) { outIniKey = _T("00"); return true; }
-		if (IniKeyExists(moveIniPath, bestSection, _T("01"))) { outIniKey = _T("01"); return true; }
+		if (Check_IniKeys(moveIniPath, bestSection, _T("00"))) { outIniKey = _T("00"); return true; }
+		if (Check_IniKeys(moveIniPath, bestSection, _T("01"))) { outIniKey = _T("01"); return true; }
 	}
 	if (suffix == _T("ANGLE"))
 	{
-		if (IniKeyExists(moveIniPath, bestSection, _T("02"))) { outIniKey = _T("02"); return true; }
-		if (IniKeyExists(moveIniPath, bestSection, _T("03"))) { outIniKey = _T("03"); return true; }
+		if (Check_IniKeys(moveIniPath, bestSection, _T("02"))) { outIniKey = _T("02"); return true; }
+		if (Check_IniKeys(moveIniPath, bestSection, _T("03"))) { outIniKey = _T("03"); return true; }
 	}
 
 	// 5) UNLOAD_PICKER_Y/Z : INSPECTION_STAGE_n / GOOD_STAGE_n / NG_STAGE_n
@@ -666,7 +666,7 @@ bool CCommon::ResolveMoveKeyFallbackByExistingKey(
 				else
 					key.Format(_T("%02d"), n);       // 01~04
 
-				if (IniKeyExists(moveIniPath, bestSection, key)) { outIniKey = key; return true; }
+				if (Check_IniKeys(moveIniPath, bestSection, key)) { outIniKey = key; return true; }
 			}
 		}
 		if (suffix.Left(p2.GetLength()) == p2)
@@ -676,7 +676,7 @@ bool CCommon::ResolveMoveKeyFallbackByExistingKey(
 			{
 				CString key;
 				key.Format(_T("%02d"), 4 + n); // 05~06
-				if (IniKeyExists(moveIniPath, bestSection, key)) { outIniKey = key; return true; }
+				if (Check_IniKeys(moveIniPath, bestSection, key)) { outIniKey = key; return true; }
 			}
 		}
 		if (suffix.Left(p3.GetLength()) == p3)
@@ -686,7 +686,7 @@ bool CCommon::ResolveMoveKeyFallbackByExistingKey(
 			{
 				CString key;
 				key.Format(_T("%02d"), 6 + n); // 07~08
-				if (IniKeyExists(moveIniPath, bestSection, key)) { outIniKey = key; return true; }
+				if (Check_IniKeys(moveIniPath, bestSection, key)) { outIniKey = key; return true; }
 			}
 		}
 	}
@@ -694,20 +694,20 @@ bool CCommon::ResolveMoveKeyFallbackByExistingKey(
 	// 6) UNLOAD_PICKER_P1/P2 : GOOD_STAGE / INSPECTION_STAGE / NG_STAGE
 	if (suffix == _T("GOOD_STAGE"))
 	{
-		if (IniKeyExists(moveIniPath, bestSection, _T("01"))) { outIniKey = _T("01"); return true; }
+		if (Check_IniKeys(moveIniPath, bestSection, _T("01"))) { outIniKey = _T("01"); return true; }
 	}
 	if (suffix == _T("INSPECTION_STAGE"))
 	{
-		if (IniKeyExists(moveIniPath, bestSection, _T("02"))) { outIniKey = _T("02"); return true; }
+		if (Check_IniKeys(moveIniPath, bestSection, _T("02"))) { outIniKey = _T("02"); return true; }
 	}
 	if (suffix == _T("NG_STAGE"))
 	{
-		if (IniKeyExists(moveIniPath, bestSection, _T("03"))) { outIniKey = _T("03"); return true; }
+		if (Check_IniKeys(moveIniPath, bestSection, _T("03"))) { outIniKey = _T("03"); return true; }
 	}
 
 	return false;
 }
-bool CCommon::TryFindMoveValue(const CString& moveIniPath, const CString& dataId, CString& outValue)
+bool CCommon::Check_MoveData(const CString& moveIniPath, const CString& dataId, CString& outValue)
 {
 	if (dataId.Left(3) != _T("MD_"))
 		return false;
@@ -728,7 +728,7 @@ bool CCommon::TryFindMoveValue(const CString& moveIniPath, const CString& dataId
 	while (*p)
 	{
 		CString sec(p);
-		CString canon = StripNumberPrefix(sec);
+		CString canon = RemoveMoveDataPrefix(sec);
 
 		if (rest.Find(canon + _T("_")) == 0 || rest == canon)
 		{
@@ -745,7 +745,7 @@ bool CCommon::TryFindMoveValue(const CString& moveIniPath, const CString& dataId
 		return false;
 
 	// 3) canonSection + suffix 계산
-	CString canonBest = StripNumberPrefix(bestSection);
+	CString canonBest = RemoveMoveDataPrefix(bestSection);
 	CString suffix;
 
 	if (rest.GetLength() > canonBest.GetLength() + 1)
@@ -757,10 +757,10 @@ bool CCommon::TryFindMoveValue(const CString& moveIniPath, const CString& dataId
 	CString iniKey;
 
 	// (1) 우선: 완전 고정 룰
-	if (!ResolveMoveKeyBySectionAndSuffix(canonBest, suffix, iniKey))
+	if (!Sort_MoveData_Keys(canonBest, suffix, iniKey))
 	{
 		// (2) fallback: 실제 ini에 존재하는 key로 판단
-		if (!ResolveMoveKeyFallbackByExistingKey(
+		if (!Sort_MoveData(
 			moveIniPath,
 			bestSection,   // 실제 섹션명
 			canonBest,     // 숫자 제거 섹션명
@@ -772,7 +772,7 @@ bool CCommon::TryFindMoveValue(const CString& moveIniPath, const CString& dataId
 	}
 
 	// 5) 값 읽기
-	CString value = ReadIniString(moveIniPath, bestSection, iniKey);
+	CString value = Get_IniValues(moveIniPath, bestSection, iniKey);
 	if (value.IsEmpty())
 		return false;
 
@@ -792,7 +792,7 @@ bool CCommon::TryFindMoveValue(const CString& moveIniPath, const CString& dataId
 
 
 
-bool CCommon::BuildDataIdValueVector(const CString& equipIniPath, const CString& moveIniPath,vectorPair& outVec)
+bool CCommon::Get_IniValues(const CString& equipIniPath, const CString& moveIniPath,vectorPair& outVec)
 {
 	outVec.clear();
 	outVec.reserve(nHandlerDataIdCount);
@@ -804,9 +804,9 @@ bool CCommon::BuildDataIdValueVector(const CString& equipIniPath, const CString&
 
 		bool ok = false;
 		if (dataId.Left(3) == _T("EQ_"))
-			ok = TryFindEquipValue(equipIniPath, dataId, value);
+			ok = Check_EquipData(equipIniPath, dataId, value);
 		else if (dataId.Left(3) == _T("MD_"))
-			ok = TryFindMoveValue(moveIniPath, dataId, value);
+			ok = Check_MoveData(moveIniPath, dataId, value);
 
 		// 못 찾는 경우 빈값으로 넣거나, 로그 남기기 선택
 		outVec.push_back(std::make_pair(dataId, ok ? value : _T("")));
